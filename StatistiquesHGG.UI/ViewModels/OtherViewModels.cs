@@ -17,6 +17,9 @@ public class RapportViewModel : BaseViewModel, ILoadable
     private string _statusMessage = string.Empty;
     private bool _isSuccess;
     private bool _isGenerating;
+    private int _typePeriodeIndex;
+    private DateTimeOffset _dateDebut;
+    private DateTimeOffset _dateFin;
 
     public RapportViewModel(AppDbContext context, RMAGenerator rmaGenerator)
     {
@@ -25,6 +28,9 @@ public class RapportViewModel : BaseViewModel, ILoadable
         Rapports = new ObservableCollection<Rapport>();
         SelectedPeriode = DateTimeOffset.Now;
         TypeRapportIndex = 0; // RMA par défaut
+        TypePeriodeIndex = 0; // Mois par défaut
+        DateDebut = DateTimeOffset.Now.AddMonths(-1);
+        DateFin = DateTimeOffset.Now;
 
         GenererRMAExcelCommand = new RelayCommand(async () => await GenererRMAAsync("Excel"));
         GenererRMAPDFCommand   = new RelayCommand(async () => await GenererRMAAsync("PDF"));
@@ -34,6 +40,31 @@ public class RapportViewModel : BaseViewModel, ILoadable
     public ObservableCollection<Rapport> Rapports        { get; }
     public DateTimeOffset  SelectedPeriode               { get; set; }
     public int             TypeRapportIndex              { get; set; }
+    
+    // Nouvelles propriétés pour la sélection de période
+    public int TypePeriodeIndex
+    {
+        get => _typePeriodeIndex;
+        set { SetProperty(ref _typePeriodeIndex, value); OnPropertyChanged(nameof(IsPeriodeSimple)); OnPropertyChanged(nameof(IsPeriodelarge)); }
+    }
+    
+    public DateTimeOffset DateDebut
+    {
+        get => _dateDebut;
+        set => SetProperty(ref _dateDebut, value);
+    }
+    
+    public DateTimeOffset DateFin
+    {
+        get => _dateFin;
+        set => SetProperty(ref _dateFin, value);
+    }
+    
+    public bool IsPeriodeSimple => TypePeriodeIndex == 0; // Mois
+    public bool IsPeriodelarge => TypePeriodeIndex == 1; // Période large
+    
+    public string[] TypesPeriode => new[] { "Mois", "Période personnalisée" };
+    
     public string          StatusMessage { get => _statusMessage; set => SetProperty(ref _statusMessage, value); }
     public bool            IsSuccess     { get => _isSuccess;     set => SetProperty(ref _isSuccess, value); }
     public bool            IsGenerating  { get => _isGenerating;  set => SetProperty(ref _isGenerating, value); }
@@ -60,18 +91,34 @@ public class RapportViewModel : BaseViewModel, ILoadable
         StatusMessage = $"Génération du RMA en cours ({format})...";
         try
         {
-            var periode = SelectedPeriode.DateTime;
+            // Déterminer la période selon le choix de l'utilisateur
+            DateTime dateDebut, dateFin;
+            
+            if (TypePeriodeIndex == 0) // Mois simple
+            {
+                var periode = SelectedPeriode.DateTime;
+                dateDebut = new DateTime(periode.Year, periode.Month, 1);
+                dateFin = dateDebut.AddMonths(1).AddDays(-1);
+            }
+            else // Période personnalisée
+            {
+                dateDebut = DateDebut.DateTime;
+                dateFin = DateFin.DateTime;
+            }
+            
             var dossier = AppSettings.ReportsFolder;
+            
+            // Utiliser la date de début pour le nommage
             string fichier = format == "Excel"
-                ? await _rmaGenerator.GenererExcelAsync(periode, dossier)
-                : await _rmaGenerator.GenererPDFAsync(periode, dossier);
+                ? await _rmaGenerator.GenererExcelAsync(dateDebut, dossier)
+                : await _rmaGenerator.GenererPDFAsync(dateDebut, dossier);
 
             var user = AuthenticationService.CurrentUser;
             var rapport = new Rapport
             {
                 Type = StatistiquesHGG.Core.Enums.TypeRapport.RMA,
-                Titre = $"RMA — {periode:MMMM yyyy}",
-                Periode = new DateTime(periode.Year, periode.Month, 1),
+                Titre = $"RMA — {dateDebut:MMMM yyyy}",
+                Periode = dateDebut,
                 GenereParId = user!.Id,
                 DateGeneration = DateTime.Now,
                 CheminFichier = fichier

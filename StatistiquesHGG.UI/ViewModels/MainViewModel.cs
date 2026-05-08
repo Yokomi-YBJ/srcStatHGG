@@ -32,6 +32,8 @@ public class MainViewModel : BaseViewModel
         CanRapports = user?.Role is RoleType.SuperAdmin; // Rapports SuperAdmin uniquement
         CanAdmin    = user?.Role == RoleType.SuperAdmin;
         CanViewPerformances = user?.Role is RoleType.SuperAdmin or RoleType.ChefDeSaisie;
+        // v5: Dashboard visible uniquement par SuperAdmin et Consulteur
+        CanViewDashboard = user?.Role is RoleType.SuperAdmin or RoleType.Consulteur;
 
         NavigateCommand = new RelayCommandSync<object?>(page => NavigateTo(page?.ToString() ?? "Dashboard"));
         NavigateTo("Dashboard");
@@ -44,6 +46,7 @@ public class MainViewModel : BaseViewModel
     public bool CanRapports { get; }
     public bool CanAdmin    { get; }
     public bool CanViewPerformances { get; }
+    public bool CanViewDashboard { get; }
 
     public string ActivePage
     {
@@ -70,6 +73,12 @@ public class MainViewModel : BaseViewModel
 
     public void NavigateTo(string page)
     {
+        // v5: Dashboard uniquement pour SuperAdmin et Consulteur
+        if (page == "Dashboard" && !CanViewDashboard)
+        {
+            page = CanSaisir ? "Saisie" : "Classement";
+        }
+        
         BaseViewModel? newPage = page switch
         {
             "Dashboard"  => GetService<DashboardViewModel>(),
