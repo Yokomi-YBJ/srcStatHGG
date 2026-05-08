@@ -65,6 +65,7 @@ public class MainViewModel : BaseViewModel
 
     public bool IsDashboardActive  => ActivePage == "Dashboard";
     public bool IsSaisieActive     => ActivePage == "Saisie";
+    public bool IsMouvementActive  => ActivePage == "Mouvement";
     // v5: Menu Validation supprimé définitivement
     public bool IsRapportsActive   => ActivePage == "Rapports";
     public bool IsClassementActive => ActivePage == "Classement";
@@ -81,15 +82,16 @@ public class MainViewModel : BaseViewModel
         
         BaseViewModel? newPage = page switch
         {
-            "Dashboard"  => GetService<DashboardViewModel>(),
-            "Saisie"     => GetService<SaisieRmaViewModel>(),
+            "Dashboard"     => GetService<DashboardViewModel>(),
+            "Saisie"        => GetService<SaisieRmaViewModel>(),
+            "Mouvement"     => GetService<MouvementPatientViewModel>(),
             // v5: Validation supprimé — navigation rejetée
-            "Validation" => GetService<DashboardViewModel>(),  // Redirect vers Dashboard
-            "Rapports"   => GetService<RapportViewModel>(),
-            "Classement" => GetService<ClassementViewModel>(),
-            "Admin"      => GetService<UtilisateursViewModel>(),
-            "Cibles"     => GetService<CiblesViewModel>(),
-            _            => GetService<DashboardViewModel>()
+            "Validation"    => GetService<DashboardViewModel>(),  // Redirect vers Dashboard
+            "Rapports"      => GetService<RapportViewModel>(),
+            "Classement"    => GetService<ClassementViewModel>(),
+            "Admin"         => GetService<UtilisateursViewModel>(),
+            "Cibles"        => GetService<CiblesViewModel>(),
+            _               => GetService<DashboardViewModel>()
         };
 
         CurrentPage = newPage;
@@ -110,6 +112,7 @@ public class MainViewModel : BaseViewModel
     {
         OnPropertyChanged(nameof(IsDashboardActive));
         OnPropertyChanged(nameof(IsSaisieActive));
+        OnPropertyChanged(nameof(IsMouvementActive));
         // v5: Suppression notification IsValidationActive
         OnPropertyChanged(nameof(IsRapportsActive));
         OnPropertyChanged(nameof(IsClassementActive));

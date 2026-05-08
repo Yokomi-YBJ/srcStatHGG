@@ -6,4 +6,14 @@
         <FluentTheme />
         <StyleInclude Source="avares://StatistiquesHGG.UI/Styles/AppStyles.axaml"/>
     </Application.Styles>
+    
+    <Application.Resources>
+        <!-- Converters globaux -->
+        <local:InverseBoolConverter x:Key="InverseBoolConverter" 
+                                    xmlns:local="clr-namespace:StatistiquesHGG.UI;assembly=StatistiquesHGG.UI"/>
+        <local:IntToBoolConverter x:Key="IntToBoolConverter"
+                                  xmlns:local="clr-namespace:StatistiquesHGG.UI;assembly=StatistiquesHGG.UI"/>
+        <local:NullToBoolConverter x:Key="NullToBoolConverter"
+                                   xmlns:local="clr-namespace:StatistiquesHGG.UI;assembly=StatistiquesHGG.UI"/>
+    </Application.Resources>
 </Application>

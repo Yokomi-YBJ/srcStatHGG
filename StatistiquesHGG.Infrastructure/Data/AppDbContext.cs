@@ -33,6 +33,10 @@ public class AppDbContext : DbContext
     public DbSet<SaisieMorgue>          SaisiesMorgue          { get; set; }
     public DbSet<SaisieMape>            SaisiesMape            { get; set; }
     public DbSet<LigneMape>             LignesMape             { get; set; }
+    
+    // v5: Patient tracking (Formulaire B - Mouvement & Suivi)
+    public DbSet<Patient>               Patients               { get; set; }
+    public DbSet<PatientMouvement>      PatientsMouvements     { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -53,6 +57,10 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<SaisieConsultation>().HasIndex(s => new { s.ServiceId, s.DateSaisie });
         modelBuilder.Entity<SaisieHospitalisation>().HasIndex(s => new { s.ServiceId, s.DateSaisie });
         modelBuilder.Entity<SaisieMape>().HasIndex(s => new { s.AnneeEpi, s.SemaineEpi }).IsUnique();
+        
+        // v5: Patient tracking indexes
+        modelBuilder.Entity<Patient>().HasIndex(p => p.Matricule).IsUnique();
+        modelBuilder.Entity<PatientMouvement>().HasIndex(m => m.PatientId);
 
         // Seed Services
         modelBuilder.Entity<Service>().HasData(
