@@ -1,0 +1,177 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:StatistiquesHGG.UI"
+             x:Class="StatistiquesHGG.UI.Views.ValidationView"
+             Background="#F5F9FC">
+
+    <Grid RowDefinitions="Auto,*" Margin="24,20,24,24">
+
+        <!-- Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,20">
+            <StackPanel Grid.Column="0" Spacing="2">
+                <TextBlock Classes="page-title" Text="Validation des données"/>
+                <TextBlock Classes="subtitle"
+                           Text="{Binding TotalEnAttente,
+                               StringFormat='{}{0} saisie(s) en attente de validation'}"/>
+            </StackPanel>
+            <Button Grid.Column="1" Classes="secondary"
+                    Command="{Binding ActualiserCommand}"
+                    Height="38" Margin="0,0,8,0" Padding="14,0">
+                <TextBlock Text="Actualiser" VerticalAlignment="Center"/>
+            </Button>
+            <Button Grid.Column="2" Classes="teal"
+                    Command="{Binding ValiderToutCommand}"
+                    Height="38" Padding="14,0">
+                <TextBlock Text="Valider tout" VerticalAlignment="Center"/>
+            </Button>
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,340">
+
+            <!-- Liste des saisies en attente -->
+            <Border Grid.Column="0" Classes="card" Margin="0,0,14,0">
+                <Grid RowDefinitions="*,Auto">
+                    <DataGrid Grid.Row="0"
+                              ItemsSource="{Binding DonneesEnAttente}"
+                              SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                              IsReadOnly="True"
+                              CanUserResizeColumns="True"
+                              AutoGenerateColumns="False"
+                              GridLinesVisibility="Horizontal">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="Type" Width="110">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{Binding TypeColor}"
+                                                CornerRadius="12" Padding="8,3"
+                                                Margin="4,2"
+                                                HorizontalAlignment="Left">
+                                            <TextBlock Text="{Binding Type}"
+                                                       FontSize="11"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#1E293B"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Service"
+                                                Binding="{Binding Service}"
+                                                Width="150"/>
+                            <DataGridTextColumn Header="Saisi par"
+                                                Binding="{Binding SaisiePar}"
+                                                Width="130"/>
+                            <DataGridTextColumn Header="Date"
+                                                Binding="{Binding Date, StringFormat='dd/MM/yyyy'}"
+                                                Width="90"/>
+                            <DataGridTextColumn Header="Résumé"
+                                                Binding="{Binding Resume}"
+                                                Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Status bar -->
+                    <Border Grid.Row="1" Padding="0,8"
+                            IsVisible="{Binding StatusMessage,
+                                Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <Border CornerRadius="6" Padding="12,8"
+                                Background="{Binding IsSuccess,
+                                    Converter={x:Static local:StatutToColorConverter.Instance}}">
+                            <TextBlock Text="{Binding StatusMessage}" FontSize="12"/>
+                        </Border>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Panneau droite -->
+            <StackPanel Grid.Column="1" Spacing="12">
+
+                <!-- Détail de la saisie sélectionnée -->
+                <Border Classes="card"
+                        IsVisible="{Binding SelectedItem,
+                            Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <StackPanel Spacing="12">
+                        <TextBlock Classes="title-section" Text="Détail de la saisie"/>
+
+                        <Border CornerRadius="8" Padding="12,10"
+                                Background="{Binding SelectedItem.TypeColor}">
+                            <StackPanel Spacing="6">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="{Binding SelectedItem.Type}"
+                                               FontWeight="Bold" FontSize="14"
+                                               Foreground="#1E293B"/>
+                                    <TextBlock Text="—" Foreground="#94A3B8"/>
+                                    <TextBlock Text="{Binding SelectedItem.Service}"
+                                               FontSize="13" Foreground="#374151"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding SelectedItem.SaisiePar,
+                                               StringFormat='Saisi par : {0}'}"
+                                           FontSize="12" Foreground="#64748B"/>
+                                <TextBlock Text="{Binding SelectedItem.Date,
+                                               StringFormat='Date : {0:dd/MM/yyyy}'}"
+                                           FontSize="12" Foreground="#64748B"/>
+                                <Border Height="1" Background="#E2E8F0" Margin="0,4"/>
+                                <TextBlock Text="{Binding SelectedItem.Resume}"
+                                           FontSize="12" Foreground="#374151"
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Commentaire -->
+                <Border Classes="card"
+                        IsVisible="{Binding SelectedItem,
+                            Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <StackPanel Spacing="8">
+                        <TextBlock Classes="label" Text="Commentaire (optionnel)"/>
+                        <TextBox Text="{Binding CommentaireValidation, Mode=TwoWay}"
+                                 Watermark="Commentaire de validation ou rejet..."
+                                 Height="70" AcceptsReturn="True"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Boutons action -->
+                <StackPanel Spacing="8"
+                            IsVisible="{Binding SelectedItem,
+                                Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <Button HorizontalAlignment="Stretch" Height="42"
+                            Command="{Binding ValiderCommand}"
+                            Background="#059669" Foreground="White"
+                            CornerRadius="6" BorderThickness="0">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Path Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+                                  Fill="White" Width="16" Height="16"
+                                  Stretch="Uniform" VerticalAlignment="Center"/>
+                            <TextBlock Text="Valider cette saisie"
+                                       VerticalAlignment="Center"
+                                       FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="danger"
+                            Command="{Binding RejeterCommand}"
+                            HorizontalAlignment="Stretch" Height="38">
+                        <TextBlock Text="Rejeter" VerticalAlignment="Center"/>
+                    </Button>
+                </StackPanel>
+
+                <!-- État vide (rien de sélectionné) -->
+                <Border Classes="card"
+                        IsVisible="{Binding SelectedItem,
+                            Converter={x:Static ObjectConverters.IsNull}}">
+                    <StackPanel VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                Spacing="12" Margin="0,20">
+                        <Path Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+                              Fill="#CBD5E1" Width="40" Height="40"
+                              Stretch="Uniform" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Sélectionnez une saisie&#10;à valider ou rejeter"
+                                   Foreground="#94A3B8" FontSize="13"
+                                   TextAlignment="Center"
+                                   TextWrapping="Wrap" MaxWidth="200"/>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

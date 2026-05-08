@@ -1,0 +1,46 @@
+namespace StatistiquesHGG.Core.Entities;
+
+public static class MapeConstants
+{
+    public static readonly List<(string Nom, bool Urgente)> Maladies = new()
+    {
+        ("Chikungunya",                                     true),
+        ("Choléra",                                          true),
+        ("Dengue / Fièvre Dengue",                          true),
+        ("Diarrhée avec déshydratation < 5 ans",            false),
+        ("Diarrhée sanglante (Shigellose)",                  false),
+        ("Dracunculose / Ver de Guinée",                    true),
+        ("Diphtérie",                                        true),
+        ("Fièvre Charbonneuse / Anthrax",                   true),
+        ("Fièvre hémorragique virale (Ebola/Marburg/Lassa)", true),
+        ("Fièvre Jaune",                                     true),
+        ("Fièvre Typhoïde",                                  false),
+        ("Méningite",                                        true),
+        ("Morsure de chien",                                 false),
+        ("Rage",                                             true),
+        ("Morsure de serpent",                               false),
+        ("Envenimation",                                     false),
+        ("Paludisme / Malaria",                              false),
+        ("Paralysie Flasque Aiguë (PFA)",                   true),
+        ("Peste",                                            true),
+        ("Rougeole",                                         true),
+        ("SRAS/IRAS (Autre que COVID-19)",                  true),
+        ("COVID-19 (Cas confirmé)",                          true),
+        ("Syndrome grippal / IRA Aiguë",                    false),
+        ("Tétanos Néonatal (INN)",                           true),
+        ("Variole du Singe / Mpox",                         true),
+        ("Variole",                                          true),
+        ("Accouchement assisté",                             false),
+        ("Naissance vivante",                                false),
+        ("Décès maternel",                                   false),
+        ("Mortinaissance / Stillbirths",                     false),
+        ("Décès Néonatal précoce",                           false),
+        ("Décès Néonatal tardif",                            false),
+        ("Autres Avènements",                                false),
+        ("Malnutrition aiguë sévère (enfants admis)",        false),
+        ("Malnutrition aiguë sévère avec complications",     false),
+        ("Malnutrition aiguë sévère avec kit WASH",          false),
+        ("Qté RUTF-plumpy nut consommée (semaine)",         false),
+        ("Qté RUTF-plumpy nut restante (semaine)",          false),
+    };
+}

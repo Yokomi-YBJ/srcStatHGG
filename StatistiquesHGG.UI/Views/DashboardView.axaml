@@ -1,0 +1,339 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:StatistiquesHGG.UI"
+             x:Class="StatistiquesHGG.UI.Views.DashboardView"
+             Background="#F5F9FC">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24,20,24,24" Spacing="14">
+
+            <!-- HEADER -->
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Spacing="2">
+                    <TextBlock Classes="page-title" Text="Tableau de bord"/>
+                    <TextBlock Classes="subtitle"
+                               Text="{Binding PeriodeLabel, StringFormat='Statistiques — {0}'}"/>
+                </StackPanel>
+                <Button Grid.Column="1" Classes="secondary" Content="Actualiser"
+                        Command="{Binding ActualiserCommand}"
+                        Height="38" VerticalAlignment="Center"/>
+            </Grid>
+
+            <!-- KPI LIGNE 1 -->
+            <Grid ColumnDefinitions="*,*,*,*">
+                <!-- Consultations -->
+                <Border Grid.Column="0" Classes="card" Margin="0,0,8,0">
+                    <StackPanel Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0" Text="Consultations du mois"
+                                       FontSize="12" Foreground="#64748B" FontWeight="Medium"/>
+                            <Border Grid.Column="1" Background="#E0F2FE" CornerRadius="8" Padding="8,4">
+                                <Path Data="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                                      Fill="#005BA1" Width="16" Height="16" Stretch="Uniform"/>
+                            </Border>
+                        </Grid>
+                        <TextBlock Text="{Binding ConsultationsDuMois}"
+                                   FontSize="36" FontWeight="Bold" Foreground="#005BA1"/>
+                        <ProgressBar Value="{Binding ConsultationsDuMois}" Maximum="3000"
+                                     Height="4" Foreground="#00A4BD" Background="#E0F2FE"
+                                     CornerRadius="2"/>
+                        <TextBlock Text="Consultations validées" FontSize="11" Foreground="#94A3B8"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Hospitalisations -->
+                <Border Grid.Column="1" Classes="card" Margin="0,0,8,0">
+                    <StackPanel Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0" Text="Hospitalisations du mois"
+                                       FontSize="12" Foreground="#64748B" FontWeight="Medium"/>
+                            <Border Grid.Column="1" Background="#E0F2FE" CornerRadius="8" Padding="8,4">
+                                <Path Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"
+                                      Fill="#00A4BD" Width="16" Height="16" Stretch="Uniform"/>
+                            </Border>
+                        </Grid>
+                        <TextBlock Text="{Binding HospitalisationsTotal}"
+                                   FontSize="36" FontWeight="Bold" Foreground="#00A4BD"/>
+                        <ProgressBar Value="{Binding HospitalisationsTotal}" Maximum="500"
+                                     Height="4" Foreground="#00A4BD" Background="#E0F2FE"
+                                     CornerRadius="2"/>
+                        <TextBlock Text="Patients hospitalisés" FontSize="11" Foreground="#94A3B8"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Taux occupation -->
+                <Border Grid.Column="2" Classes="card" Margin="0,0,8,0">
+                    <StackPanel Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0" Text="Taux d'occupation"
+                                       FontSize="12" Foreground="#64748B" FontWeight="Medium"/>
+                            <Border Grid.Column="1" Background="#F0FDF4" CornerRadius="8" Padding="8,4">
+                                <Path Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
+                                      Fill="#059669" Width="16" Height="16" Stretch="Uniform"/>
+                            </Border>
+                        </Grid>
+                        <TextBlock Text="{Binding TauxOccupation, StringFormat='{}{0:0.#}%'}"
+                                   FontSize="36" FontWeight="Bold" Foreground="#059669"/>
+                        <ProgressBar Value="{Binding TauxOccupation}" Maximum="100"
+                                     Height="4" Foreground="#059669" Background="#D1FAE5"
+                                     CornerRadius="2"/>
+                        <TextBlock Text="Capacité literie utilisée" FontSize="11" Foreground="#94A3B8"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Saisies en attente -->
+                <Border Grid.Column="3" Classes="card">
+                    <StackPanel Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0" Text="Saisies en attente"
+                                       FontSize="12" Foreground="#64748B" FontWeight="Medium"/>
+                            <Border Grid.Column="1" Background="#FEF3C7" CornerRadius="8" Padding="8,4">
+                                <Path Data="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"
+                                      Fill="#D97706" Width="16" Height="16" Stretch="Uniform"/>
+                            </Border>
+                        </Grid>
+                        <TextBlock Text="{Binding SaisiesEnAttente}"
+                                   FontSize="36" FontWeight="Bold" Foreground="#D97706"/>
+                        <ProgressBar Value="{Binding SaisiesEnAttente}" Maximum="50"
+                                     Height="4" Foreground="#D97706" Background="#FEF3C7"
+                                     CornerRadius="2"/>
+                        <TextBlock Text="À valider" FontSize="11" Foreground="#94A3B8"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- KPI LIGNE 2 -->
+            <Grid ColumnDefinitions="*,*,*,*">
+                <Border Grid.Column="0" Classes="card" Margin="0,0,8,0">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Décès du mois" FontSize="12" Foreground="#64748B" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding DecesDuMois}" FontSize="32" FontWeight="Bold" Foreground="#DC2626"/>
+                        <Border Background="#FEE2E2" CornerRadius="12" Padding="8,3" HorizontalAlignment="Left">
+                            <TextBlock Text="Mortalité hospitalière" Foreground="#DC2626" FontSize="10" FontWeight="Medium"/>
+                        </Border>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="1" Classes="card" Margin="0,0,8,0">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Accouchements" FontSize="12" Foreground="#64748B" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding AccouchementsDuMois}" FontSize="32" FontWeight="Bold" Foreground="#7C3AED"/>
+                        <Border Background="#EDE9FE" CornerRadius="12" Padding="8,3" HorizontalAlignment="Left">
+                            <TextBlock Text="{Binding CesariennesDuMois, StringFormat='Cés. : {0}'}"
+                                       Foreground="#7C3AED" FontSize="10" FontWeight="Medium"/>
+                        </Border>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="2" Classes="card" Margin="0,0,8,0">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Taux de césarienne" FontSize="12" Foreground="#64748B" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding TauxCesarienne, StringFormat='{}{0:0.#}%'}"
+                                   FontSize="32" FontWeight="Bold" Foreground="#0E7490"/>
+                        <ProgressBar Value="{Binding TauxCesarienne}" Maximum="100"
+                                     Foreground="#00A4BD" Background="#E0F2FE" Height="4"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="3" Classes="card">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Cas MAPE actifs" FontSize="12" Foreground="#64748B" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding MapeAlertes}" FontSize="32" FontWeight="Bold" Foreground="#B45309"/>
+                        <Border Background="#FEF3C7" CornerRadius="12" Padding="8,3" HorizontalAlignment="Left">
+                            <TextBlock Text="Maladies à surveiller" Foreground="#B45309" FontSize="10" FontWeight="Medium"/>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- GRAPHIQUES LIGNE 1 -->
+            <Grid ColumnDefinitions="*,*">
+                <!-- Barres consultations 6 mois -->
+                <Border Grid.Column="0" Classes="card" Margin="0,0,8,0">
+                    <StackPanel Spacing="12">
+                        <StackPanel Spacing="2">
+                            <TextBlock Classes="title-section" Text="Évolution consultations"/>
+                            <TextBlock Classes="subtitle" Text="6 derniers mois"/>
+                        </StackPanel>
+                        <ItemsControl ItemsSource="{Binding ConsultationsChart}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="50,*,50" Margin="0,4">
+                                        <TextBlock Grid.Column="0" Text="{Binding Label}"
+                                                   FontSize="11" Foreground="#64748B"
+                                                   VerticalAlignment="Center"/>
+                                        <!-- ProgressBar avec Maximum=1 et Value=Percent (0.0 à 1.0) -->
+                                        <ProgressBar Grid.Column="1" Value="{Binding Percent}"
+                                                     Maximum="1.0" Height="22"
+                                                     Foreground="{Binding Color}"
+                                                     Background="#F1F5F9"
+                                                     CornerRadius="4" Margin="8,0"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding Value}"
+                                                   FontSize="11" FontWeight="SemiBold"
+                                                   Foreground="#005BA1" VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Barres hospitalisations par service -->
+                <Border Grid.Column="1" Classes="card">
+                    <StackPanel Spacing="12">
+                        <StackPanel Spacing="2">
+                            <TextBlock Classes="title-section" Text="Hospitalisations par service"/>
+                            <TextBlock Classes="subtitle" Text="Mois en cours"/>
+                        </StackPanel>
+                        <ItemsControl ItemsSource="{Binding HospParServiceChart}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="120,*,40" Margin="0,4">
+                                        <TextBlock Grid.Column="0" Text="{Binding Label}"
+                                                   FontSize="11" Foreground="#64748B"
+                                                   VerticalAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <ProgressBar Grid.Column="1" Value="{Binding Percent}"
+                                                     Maximum="1.0" Height="20"
+                                                     Foreground="{Binding Color}"
+                                                     Background="#F1F5F9"
+                                                     CornerRadius="4" Margin="6,0"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding Value}"
+                                                   FontSize="11" FontWeight="SemiBold"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock IsVisible="{Binding !HasHospData}"
+                                   Text="Aucune donnée d'hospitalisation ce mois"
+                                   Foreground="#94A3B8" FontSize="12" TextAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- GRAPHIQUES LIGNE 2 -->
+            <Grid ColumnDefinitions="220,*,*">
+                <!-- Camembert genre -->
+                <Border Grid.Column="0" Classes="card" Margin="0,0,8,0">
+                    <StackPanel Spacing="12">
+                        <TextBlock Classes="title-section" Text="Consultations par genre"/>
+                        <StackPanel Spacing="8" IsVisible="{Binding HasGenreData}">
+                            <ItemsControl ItemsSource="{Binding GenreChart}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Spacing="4" Margin="0,3">
+                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <Border Grid.Column="0" Width="12" Height="12"
+                                                        CornerRadius="2" Margin="0,0,8,0"
+                                                        VerticalAlignment="Center"
+                                                        Background="{Binding Color}"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding Display}"
+                                                           FontSize="12" Foreground="#374151"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="2" Text="{Binding Value}"
+                                                           FontSize="12" FontWeight="Bold"
+                                                           Foreground="#1E293B" Margin="8,0,0,0"
+                                                           VerticalAlignment="Center"/>
+                                            </Grid>
+                                            <ProgressBar Value="{Binding Percent}" Maximum="100"
+                                                         Height="6" Foreground="{Binding Color}"
+                                                         Background="#F1F5F9" CornerRadius="3"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                        <TextBlock IsVisible="{Binding NoGenreData}"
+                                   Text="Aucune donnée ce mois"
+                                   Foreground="#94A3B8" FontSize="12" TextAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Top MAPE -->
+                <Border Grid.Column="1" Classes="card" Margin="0,0,8,0">
+                    <StackPanel Spacing="12">
+                        <StackPanel Spacing="2">
+                            <TextBlock Classes="title-section" Text="Top MAPE — Dernière semaine"/>
+                            <TextBlock Classes="subtitle" Text="Cas suspects par maladie"/>
+                        </StackPanel>
+                        <StackPanel Spacing="4" IsVisible="{Binding HasMapeData}">
+                            <ItemsControl ItemsSource="{Binding MapeChart}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="140,*,40" Margin="0,4">
+                                            <TextBlock Grid.Column="0" Text="{Binding Label}"
+                                                       FontSize="11" Foreground="#374151"
+                                                       VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                            <ProgressBar Grid.Column="1" Value="{Binding Percent}"
+                                                         Maximum="1.0" Height="18"
+                                                         Foreground="{Binding Color}"
+                                                         Background="#F1F5F9"
+                                                         CornerRadius="4" Margin="6,0"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding Value}"
+                                                       FontSize="11" FontWeight="Bold"
+                                                       Foreground="{Binding Color}"
+                                                       VerticalAlignment="Center"
+                                                       HorizontalAlignment="Right"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                        <TextBlock IsVisible="{Binding NoMapeData}"
+                                   Text="Aucune saisie MAPE disponible"
+                                   Foreground="#94A3B8" FontSize="12" TextAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Alertes MAPE -->
+                <Border Grid.Column="2" Classes="card">
+                    <StackPanel Spacing="10">
+                        <TextBlock Classes="title-section" Text="Alertes épidémiologiques"/>
+                        <ScrollViewer MaxHeight="180" VerticalScrollBarVisibility="Auto"
+                                      IsVisible="{Binding HasAlertesMape}">
+                            <ItemsControl ItemsSource="{Binding AlertesMape}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Margin="0,0,0,6" CornerRadius="8" Padding="10,8"
+                                                Background="{Binding NiveauColor}">
+                                            <StackPanel Spacing="4">
+                                                <TextBlock Text="{Binding Maladie}"
+                                                           FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="#1E293B"
+                                                           TextTrimming="CharacterEllipsis"/>
+                                                <Grid ColumnDefinitions="*,Auto">
+                                                    <StackPanel Grid.Column="0" Orientation="Horizontal"
+                                                                Spacing="8">
+                                                        <TextBlock Text="{Binding CasSuspects, StringFormat='CS: {0}'}"
+                                                                   FontSize="11" Foreground="#64748B"/>
+                                                        <TextBlock Text="{Binding Deces, StringFormat='DC: {0}'}"
+                                                                   FontSize="11" Foreground="#64748B"/>
+                                                        <TextBlock Text="{Binding Semaine}"
+                                                                   FontSize="10" Foreground="#94A3B8"/>
+                                                    </StackPanel>
+                                                    <Border Grid.Column="1" CornerRadius="12" Padding="6,2">
+                                                        <Border.Background>
+                                                            <SolidColorBrush Color="{Binding NiveauColor}"/>
+                                                        </Border.Background>
+                                                        <TextBlock Text="{Binding NiveauText}"
+                                                                   FontSize="10" FontWeight="Bold"
+                                                                   Foreground="{Binding NiveauFg}"/>
+                                                    </Border>
+                                                </Grid>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                        <TextBlock IsVisible="{Binding NoAlertesMape}"
+                                   Text="Aucune alerte épidémiologique"
+                                   Foreground="#94A3B8" FontSize="12" TextAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,185 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:StatistiquesHGG.UI"
+             x:Class="StatistiquesHGG.UI.Views.UtilisateursView"
+             Background="#F5F9FC">
+
+    <Grid RowDefinitions="Auto,*" Margin="24,20,24,24">
+
+        <!-- Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,20">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Classes="page-title" Text="Gestion des utilisateurs"/>
+                <TextBlock Classes="subtitle"
+                           Text="Créez et gérez les comptes d'accès au système"/>
+            </StackPanel>
+            <Button Grid.Column="1" Classes="primary"
+                    Command="{Binding NouveauCommand}"
+                    Height="40" VerticalAlignment="Center" Padding="16,0">
+                <TextBlock Text="Nouvel utilisateur" VerticalAlignment="Center"/>
+            </Button>
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,380">
+
+            <!-- Liste utilisateurs -->
+            <Border Grid.Column="0" Classes="card" Margin="0,0,14,0">
+                <Grid RowDefinitions="Auto,*">
+                    <TextBlock Grid.Row="0" Classes="title-section"
+                               Text="Liste des utilisateurs"
+                               Margin="0,0,0,12"/>
+                    <DataGrid Grid.Row="1"
+                              ItemsSource="{Binding Utilisateurs}"
+                              SelectedItem="{Binding SelectedUser, Mode=TwoWay}"
+                              IsReadOnly="True"
+                              CanUserResizeColumns="True"
+                              GridLinesVisibility="Horizontal"
+                              AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Login"
+                                                Binding="{Binding Login}"
+                                                Width="110"/>
+                            <DataGridTextColumn Header="Nom complet"
+                                                Binding="{Binding NomComplet}"
+                                                Width="*"/>
+                            <DataGridTextColumn Header="Rôle"
+                                                Binding="{Binding Role}"
+                                                Width="130"/>
+                            <DataGridTextColumn Header="Service"
+                                                Binding="{Binding Service.Libelle}"
+                                                Width="160"/>
+                            <DataGridTextColumn Header="Actif"
+                                                Binding="{Binding Actif}"
+                                                Width="70"/>
+                            <DataGridTextColumn Header="Dernière connexion"
+                                                Binding="{Binding DerniereConnexion, StringFormat='dd/MM/yyyy'}"
+                                                Width="130"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <!-- Formulaire édition -->
+            <Border Grid.Column="1" Classes="card" IsVisible="{Binding IsEditing}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="14">
+                        <TextBlock Classes="title-section"
+                                   Text="{Binding FormTitre}"/>
+
+                        <!-- Login -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Classes="label" Text="Identifiant (login) *"/>
+                            <TextBox Text="{Binding FormLogin, Mode=TwoWay}"
+                                     Watermark="ex: jean.Grégoire"
+                                     IsEnabled="{Binding IsNouvelUtilisateur}"/>
+                        </StackPanel>
+
+                        <!-- Prénom / Nom -->
+                        <Grid ColumnDefinitions="*,*">
+                            <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,6,0">
+                                <TextBlock Classes="label" Text="Prénom *"/>
+                                <TextBox Text="{Binding FormPrenom, Mode=TwoWay}"
+                                         Watermark="Prénom"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Spacing="4">
+                                <TextBlock Classes="label" Text="Nom *"/>
+                                <TextBox Text="{Binding FormNom, Mode=TwoWay}"
+                                         Watermark="Nom de famille"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Email -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Classes="label" Text="Email"/>
+                            <TextBox Text="{Binding FormEmail, Mode=TwoWay}"
+                                     Watermark="email@hgg.cm"/>
+                        </StackPanel>
+
+                        <!-- Rôle -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Classes="label" Text="Rôle *"/>
+                            <ComboBox ItemsSource="{Binding RoleOptions}"
+                                      SelectedIndex="{Binding FormRoleIndex, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+
+                        <!-- Service -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Classes="label" Text="Service"/>
+                            <ComboBox ItemsSource="{Binding Services}"
+                                      SelectedItem="{Binding FormService, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch"
+                                      PlaceholderText="Aucun service">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Libelle}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <!-- Mot de passe -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Classes="label" Text="Mot de passe"/>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBox Grid.Column="0"
+                                         Text="{Binding FormMotDePasse, Mode=TwoWay}"
+                                         Watermark="Laisser vide = inchangé"
+                                         Margin="0,0,8,0"/>
+                                <Button Grid.Column="1" Classes="secondary"
+                                        Command="{Binding GenererMDPCommand}"
+                                        Content="Générer" Height="38"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Actif -->
+                        <CheckBox Content="Compte actif"
+                                  IsChecked="{Binding FormActif, Mode=TwoWay}"/>
+
+                        <!-- Status -->
+                        <Border IsVisible="{Binding StatusMessage,
+                                    Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                Background="#F0F9FF" CornerRadius="6" Padding="10,8">
+                            <TextBlock Text="{Binding StatusMessage}"
+                                       FontSize="12" TextWrapping="Wrap"/>
+                        </Border>
+
+                        <!-- Boutons -->
+                        <StackPanel Spacing="8">
+                            <Button Classes="primary"
+                                    Command="{Binding EnregistrerCommand}"
+                                    HorizontalAlignment="Stretch" Height="40"
+                                    Content="Enregistrer"/>
+                            <Grid ColumnDefinitions="*,*">
+                                <Button Grid.Column="0" Classes="danger"
+                                        Command="{Binding SupprimerCommand}"
+                                        IsVisible="{Binding HasSelection}"
+                                        Content="Désactiver"
+                                        Margin="0,0,4,0" Height="38"/>
+                                <Button Grid.Column="1" Classes="secondary"
+                                        Command="{Binding AnnulerCommand}"
+                                        Content="Annuler" Height="38"/>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- État vide quand pas en édition -->
+            <Border Grid.Column="1" Classes="card"
+                    IsVisible="{Binding !IsEditing}">
+                <StackPanel VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Spacing="16">
+                    <Path Data="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"
+                          Fill="#CBD5E1" Width="48" Height="48" Stretch="Uniform"
+                          HorizontalAlignment="Center"/>
+                    <TextBlock Text="Sélectionnez un utilisateur&#10;ou créez-en un nouveau"
+                               Foreground="#94A3B8" FontSize="13"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap" MaxWidth="220"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

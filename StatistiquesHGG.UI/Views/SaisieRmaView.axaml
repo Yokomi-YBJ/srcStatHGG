@@ -1,0 +1,890 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:StatistiquesHGG.UI"
+             x:Class="StatistiquesHGG.UI.Views.SaisieRmaView"
+             Background="#F5F9FC">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="16,14,16,14">
+
+        <!-- HEADER -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+            <StackPanel Grid.Column="0" Spacing="2">
+                <TextBlock Classes="page-title" Text="Saisie RMA / MAPE"/>
+                <TextBlock Classes="subtitle"
+                           Text="{Binding ServiceNom, StringFormat='Service : {0}'}"/>
+            </StackPanel>
+            <Grid Grid.Column="1" ColumnDefinitions="Auto,Auto">
+                <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,12,0">
+                    <TextBlock Classes="label" Text="Date de saisie"/>
+                    <DatePicker SelectedDate="{Binding DateSaisie, Mode=TwoWay}"/>
+                </StackPanel>
+                <Button Grid.Column="1" Classes="primary"
+                        Command="{Binding EnregistrerCommand}"
+                        IsEnabled="{Binding !IsSaving}"
+                        Height="38" VerticalAlignment="Bottom"
+                        Padding="20,0">
+                    <TextBlock Text="Enregistrer" VerticalAlignment="Center"/>
+                </Button>
+            </Grid>
+        </Grid>
+
+        <!-- Sélecteur service (SuperAdmin) -->
+        <Border Grid.Row="1" IsVisible="{Binding CanChooseService}"
+                Classes="card-small" Margin="0,0,0,10" Padding="10,8">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <TextBlock Text="Service :" Classes="label"
+                           VerticalAlignment="Center" Margin="0"/>
+                <ComboBox ItemsSource="{Binding ServicesDisponibles}"
+                          SelectedItem="{Binding ServiceChoisi, Mode=TwoWay}"
+                          Width="300"
+                          PlaceholderText="Sélectionner un service">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Libelle}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+        </Border>
+
+        <!-- BODY : Menu gauche + Formulaire droit -->
+        <Grid Grid.Row="2" ColumnDefinitions="180,*">
+
+            <!-- MENU ONGLETS -->
+            <Border Grid.Column="0" Background="#0A2342"
+                    CornerRadius="10" Margin="0,0,12,0" Padding="6,10">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="SECTIONS RMA" Foreground="#7FB9DD"
+                                   FontSize="10" FontWeight="Bold"
+                                   Margin="10,0,0,8" LetterSpacing="1"/>
+
+                        <!-- Consultations -->
+                        <Button IsVisible="{Binding MenuConsultationVisible}"
+                                Classes="nav-item"
+                                Classes.active="{Binding ShowConsultation}"
+                                Command="{Binding NavigateOngletCommand}"
+                                CommandParameter="0">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Path Data="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                                      Fill="White" Width="14" Height="14"
+                                      Stretch="Uniform" VerticalAlignment="Center"/>
+                                <TextBlock Text="Consultations"
+                                           VerticalAlignment="Center" FontSize="12"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Hospitalisations -->
+                        <Button IsVisible="{Binding MenuHospitalisationVisible}"
+                                Classes="nav-item"
+                                Classes.active="{Binding ShowHospitalisation}"
+                                Command="{Binding NavigateOngletCommand}"
+                                CommandParameter="1">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Path Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"
+                                      Fill="White" Width="14" Height="14"
+                                      Stretch="Uniform" VerticalAlignment="Center"/>
+                                <TextBlock Text="Hospitalisations"
+                                           VerticalAlignment="Center" FontSize="12"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Chirurgie -->
+                        <Button IsVisible="{Binding MenuChirurgieVisible}"
+                                Classes="nav-item"
+                                Classes.active="{Binding ShowChirurgie}"
+                                Command="{Binding NavigateOngletCommand}"
+                                CommandParameter="2">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Path Data="M7 5c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm12 14v-2c0-2.67-5.33-4-8-4S3 14.33 3 17v2h16z"
+                                      Fill="White" Width="14" Height="14"
+                                      Stretch="Uniform" VerticalAlignment="Center"/>
+                                <TextBlock Text="Chirurgie"
+                                           VerticalAlignment="Center" FontSize="12"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Urgences -->
+                        <Button IsVisible="{Binding MenuUrgencesVisible}"
+                                Classes="nav-item"
+                                Classes.active="{Binding ShowUrgences}"
+                                Command="{Binding NavigateOngletCommand}"
+                                CommandParameter="3">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+                                      Fill="White" Width="14" Height="14"
+                                      Stretch="Uniform" VerticalAlignment="Center"/>
+                                <TextBlock Text="Urgences"
+                                           VerticalAlignment="Center" FontSize="12"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Décès -->
+                        <Button IsVisible="{Binding MenuDecesVisible}"
+                                Classes="nav-item"
+                                Classes.active="{Binding ShowDeces}"
+                                Command="{Binding NavigateOngletCommand}"
+                                CommandParameter="4">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Path Data="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
+                                      Fill="White" Width="14" Height="14"
+                                      Stretch="Uniform" VerticalAlignment="Center"/>
+                                <TextBlock Text="Décès"
+                                           VerticalAlignment="Center" FontSize="12"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Laboratoire -->
+                        <Button IsVisible="{Binding MenuLaboVisible}"
+                                Classes="nav-item"
+                                Classes.active="{Binding ShowLabo}"
+                                Command="{Binding NavigateOngletCommand}"
+                                CommandParameter="5">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Path Data="M9 3H7v2h2V3zm4 0h-2v2h2V3zm4 0h-2v2h2V3zM5 7v11h14V7H5zm11 9H8v-2h8v2zm0-4H8v-2h8v2z"
+                                      Fill="White" Width="14" Height="14"
+                                      Stretch="Uniform" VerticalAlignment="Center"/>
+                                <TextBlock Text="Laboratoire"
+                                           VerticalAlignment="Center" FontSize="12"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Vaccination -->
+                        <Button IsVisible="{Binding MenuVaccinationVisible}"
+                                Classes="nav-item"
+                                Classes.active="{Binding ShowVaccination}"
+                                Command="{Binding NavigateOngletCommand}"
+                                CommandParameter="6">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Path Data="M6.5 10h-2v5h2v-5zm4 0h-2v5h2v-5zm8.5 7H4v2h15v-2zm-4.5-7h-2v5h2v-5zM11.5 1L2 6v2h19V6l-9.5-5z"
+                                      Fill="White" Width="14" Height="14"
+                                      Stretch="Uniform" VerticalAlignment="Center"/>
+                                <TextBlock Text="Vaccination"
+                                           VerticalAlignment="Center" FontSize="12"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Banque de Sang -->
+                        <Button IsVisible="{Binding MenuBanqueSangVisible}"
+                                Classes="nav-item"
+                                Classes.active="{Binding ShowBanqueSang}"
+                                Command="{Binding NavigateOngletCommand}"
+                                CommandParameter="7">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Path Data="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"
+                                      Fill="White" Width="14" Height="14"
+                                      Stretch="Uniform" VerticalAlignment="Center"/>
+                                <TextBlock Text="Banque de Sang"
+                                           VerticalAlignment="Center" FontSize="12"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Morgue -->
+                        <Button IsVisible="{Binding MenuMorgueVisible}"
+                                Classes="nav-item"
+                                Classes.active="{Binding ShowMorgue}"
+                                Command="{Binding NavigateOngletCommand}"
+                                CommandParameter="8">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Path Data="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
+                                      Fill="White" Width="14" Height="14"
+                                      Stretch="Uniform" VerticalAlignment="Center"/>
+                                <TextBlock Text="Morgue"
+                                           VerticalAlignment="Center" FontSize="12"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Séparateur MAPE -->
+                        <Border Height="1" Background="#1E3A5F" Margin="8,6"/>
+                        <TextBlock Text="ÉPIDÉMIOLOGIE" Foreground="#7FB9DD"
+                                   FontSize="10" FontWeight="Bold"
+                                   Margin="10,0,0,4" LetterSpacing="1"/>
+
+                        <!-- MAPE -->
+                        <Button Classes="nav-item"
+                                Classes.active="{Binding ShowMape}"
+                                Command="{Binding NavigateOngletCommand}"
+                                CommandParameter="9">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Path Data="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"
+                                      Fill="#F59E0B" Width="14" Height="14"
+                                      Stretch="Uniform" VerticalAlignment="Center"/>
+                                <TextBlock Text="MAPE"
+                                           VerticalAlignment="Center" FontSize="12"/>
+                            </StackPanel>
+                        </Button>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- FORMULAIRE DYNAMIQUE -->
+            <Border Grid.Column="1" Classes="card" Padding="18,14">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="16">
+
+                        <!-- ===== CONSULTATIONS ===== -->
+                        <StackPanel Spacing="12" IsVisible="{Binding ShowConsultation}">
+                            <StackPanel Spacing="2">
+                                <TextBlock Classes="title-section"
+                                           Text="Consultations externes"/>
+                                <TextBlock Classes="subtitle"
+                                           Text="Totaux journaliers — Nouvelles et Anciennes consultations"/>
+                            </StackPanel>
+
+                            <!-- Totaux live -->
+                            <Grid ColumnDefinitions="*,*,*">
+                                <Border Grid.Column="0" Background="#E0F2FE"
+                                        CornerRadius="8" Padding="12,8" Margin="0,0,6,0">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="Nouvelles" FontSize="11"
+                                                   Foreground="#64748B"/>
+                                        <TextBlock Text="{Binding ConsultTotalNouveaux}"
+                                                   FontSize="26" FontWeight="Bold"
+                                                   Foreground="#005BA1"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="1" Background="#F0FDF4"
+                                        CornerRadius="8" Padding="12,8" Margin="0,0,6,0">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="Anciennes" FontSize="11"
+                                                   Foreground="#64748B"/>
+                                        <TextBlock Text="{Binding ConsultTotalAnciens}"
+                                                   FontSize="26" FontWeight="Bold"
+                                                   Foreground="#059669"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="2" Background="#FEF3C7"
+                                        CornerRadius="8" Padding="12,8">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="TOTAL" FontSize="11"
+                                                   Foreground="#64748B"/>
+                                        <TextBlock Text="{Binding ConsultTotalGeneral}"
+                                                   FontSize="26" FontWeight="Bold"
+                                                   Foreground="#D97706"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <!-- Grille saisie -->
+                            <Border Background="#F8FAFC" CornerRadius="8" Padding="14">
+                                <Grid RowDefinitions="Auto,Auto,Auto">
+                                    <!-- En-têtes -->
+                                    <Grid Grid.Row="0" ColumnDefinitions="180,*,*,*">
+                                        <TextBlock Grid.Column="1" Text="Hommes"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="Femmes"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="3" Text="Enfants"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <!-- Nouvelles -->
+                                    <Grid Grid.Row="1" ColumnDefinitions="180,*,*,*"
+                                          Margin="0,8,0,0">
+                                        <TextBlock Grid.Column="0"
+                                                   Text="Nouvelles consultations"
+                                                   FontSize="13" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding ConsultNouveauxH, Mode=TwoWay}"
+                                                       Minimum="0" Maximum="9999"
+                                                       FormatString="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2"
+                                                       Value="{Binding ConsultNouvellesF, Mode=TwoWay}"
+                                                       Minimum="0" Maximum="9999"
+                                                       FormatString="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="3"
+                                                       Value="{Binding ConsultNouveauxE, Mode=TwoWay}"
+                                                       Minimum="0" Maximum="9999"
+                                                       FormatString="0" Margin="4,0"/>
+                                    </Grid>
+                                    <!-- Anciennes -->
+                                    <Grid Grid.Row="2" ColumnDefinitions="180,*,*,*"
+                                          Margin="0,8,0,0">
+                                        <TextBlock Grid.Column="0"
+                                                   Text="Anciennes consultations"
+                                                   FontSize="13" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding ConsultAnciensH, Mode=TwoWay}"
+                                                       Minimum="0" Maximum="9999"
+                                                       FormatString="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2"
+                                                       Value="{Binding ConsultAnciennesF, Mode=TwoWay}"
+                                                       Minimum="0" Maximum="9999"
+                                                       FormatString="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="3"
+                                                       Value="{Binding ConsultAnciensE, Mode=TwoWay}"
+                                                       Minimum="0" Maximum="9999"
+                                                       FormatString="0" Margin="4,0"/>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- ===== HOSPITALISATIONS ===== -->
+                        <StackPanel Spacing="12" IsVisible="{Binding ShowHospitalisation}">
+                            <TextBlock Classes="title-section" Text="Hospitalisations"/>
+                            <Grid ColumnDefinitions="*,*">
+                                <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,6,0">
+                                    <TextBlock Classes="label" Text="Service *"/>
+                                    <ComboBox ItemsSource="{Binding ServicesHosp}"
+                                              SelectedIndex="{Binding HospServiceIndex, Mode=TwoWay}"
+                                              HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Spacing="4">
+                                    <TextBlock Classes="label" Text="Type d'activité *"/>
+                                    <ComboBox ItemsSource="{Binding ActivitesHosp}"
+                                              SelectedIndex="{Binding HospActiviteIndex, Mode=TwoWay}"
+                                              HorizontalAlignment="Stretch"
+                                              PlaceholderText="Choisir le service d'abord"/>
+                                </StackPanel>
+                            </Grid>
+                            <Border Background="#F8FAFC" CornerRadius="8" Padding="14">
+                                <Grid RowDefinitions="Auto,Auto">
+                                    <Grid Grid.Row="0" ColumnDefinitions="160,*,*,*,*">
+                                        <TextBlock Grid.Column="1" Text="Hommes"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="Femmes"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="3" Text="Enfants"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="4" Text="Jours hosp."
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <Grid Grid.Row="1" ColumnDefinitions="160,*,*,*,*"
+                                          Margin="0,8,0,0">
+                                        <TextBlock Grid.Column="0" Text="Nombre"
+                                                   VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding HospHommes, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2"
+                                                       Value="{Binding HospFemmes, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="3"
+                                                       Value="{Binding HospEnfants, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="4"
+                                                       Value="{Binding HospJours, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="4,0"/>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                            <Border Background="#E0F2FE" CornerRadius="6" Padding="10,8">
+                                <TextBlock Text="{Binding HospTotal, StringFormat='Total hospitalisés : {0}'}"
+                                           FontSize="13" FontWeight="SemiBold"
+                                           Foreground="#005BA1"/>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- ===== CHIRURGIE ===== -->
+                        <StackPanel Spacing="12" IsVisible="{Binding ShowChirurgie}">
+                            <TextBlock Classes="title-section" Text="Actes chirurgicaux"/>
+                            <StackPanel Spacing="4">
+                                <TextBlock Classes="label" Text="Spécialité *"/>
+                                <ComboBox ItemsSource="{Binding SpecialitesChir}"
+                                          SelectedIndex="{Binding ChirSpecialiteIndex, Mode=TwoWay}"
+                                          HorizontalAlignment="Stretch"/>
+                            </StackPanel>
+                            <Border Background="#F8FAFC" CornerRadius="8" Padding="14">
+                                <Grid RowDefinitions="Auto,Auto">
+                                    <Grid Grid.Row="0" ColumnDefinitions="160,*,*,*">
+                                        <TextBlock Grid.Column="1" Text="Hommes"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="Femmes"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="3" Text="Enfants"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <Grid Grid.Row="1" ColumnDefinitions="160,*,*,*"
+                                          Margin="0,8,0,0">
+                                        <TextBlock Grid.Column="0" Text="Interventions"
+                                                   VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding ChirHommes, Mode=TwoWay}"
+                                                       Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2"
+                                                       Value="{Binding ChirFemmes, Mode=TwoWay}"
+                                                       Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="3"
+                                                       Value="{Binding ChirEnfants, Mode=TwoWay}"
+                                                       Minimum="0" Margin="4,0"/>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                            <Border Background="#E0F2FE" CornerRadius="6" Padding="10,8">
+                                <TextBlock Text="{Binding ChirTotal, StringFormat='Total actes : {0}'}"
+                                           FontSize="13" FontWeight="SemiBold" Foreground="#005BA1"/>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- ===== URGENCES ===== -->
+                        <StackPanel Spacing="12" IsVisible="{Binding ShowUrgences}">
+                            <TextBlock Classes="title-section" Text="Actes des Urgences"/>
+                            <TextBlock Classes="subtitle"
+                                       Text="H=Hommes · F=Femmes · EM=Enfants M · EF=Enfants F"/>
+                            <Border Background="#F8FAFC" CornerRadius="8" Padding="14">
+                                <StackPanel Spacing="10">
+                                    <!-- En-têtes -->
+                                    <Grid ColumnDefinitions="180,*,*,*,*">
+                                        <TextBlock Grid.Column="1" Text="H"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="F"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="3" Text="EM"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="4" Text="EF"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <!-- Mise en observation -->
+                                    <Grid ColumnDefinitions="180,*,*,*,*">
+                                        <TextBlock Grid.Column="0" Text="Mise en observation"
+                                                   FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding UrgMEO_H, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                        <NumericUpDown Grid.Column="2"
+                                                       Value="{Binding UrgMEO_F, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                        <NumericUpDown Grid.Column="3"
+                                                       Value="{Binding UrgMEO_EM, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                        <NumericUpDown Grid.Column="4"
+                                                       Value="{Binding UrgMEO_EF, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                    </Grid>
+                                    <!-- Transfert -->
+                                    <Grid ColumnDefinitions="180,*,*,*,*">
+                                        <TextBlock Grid.Column="0" Text="Transfert"
+                                                   FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding UrgTRF_H, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                        <NumericUpDown Grid.Column="2"
+                                                       Value="{Binding UrgTRF_F, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                        <NumericUpDown Grid.Column="3"
+                                                       Value="{Binding UrgTRF_EM, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                        <NumericUpDown Grid.Column="4"
+                                                       Value="{Binding UrgTRF_EF, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                    </Grid>
+                                    <!-- Sortie autorisée -->
+                                    <Grid ColumnDefinitions="180,*,*,*,*">
+                                        <TextBlock Grid.Column="0" Text="Sortie autorisée"
+                                                   FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding UrgSA_H, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                        <NumericUpDown Grid.Column="2"
+                                                       Value="{Binding UrgSA_F, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                        <NumericUpDown Grid.Column="3"
+                                                       Value="{Binding UrgSA_EM, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                        <NumericUpDown Grid.Column="4"
+                                                       Value="{Binding UrgSA_EF, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                    </Grid>
+                                    <!-- SCAM -->
+                                    <Grid ColumnDefinitions="180,*,*,*,*">
+                                        <TextBlock Grid.Column="0" Text="SCAM"
+                                                   FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding UrgSCAM_H, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                        <NumericUpDown Grid.Column="2"
+                                                       Value="{Binding UrgSCAM_F, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                        <NumericUpDown Grid.Column="3"
+                                                       Value="{Binding UrgSCAM_EM, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                        <NumericUpDown Grid.Column="4"
+                                                       Value="{Binding UrgSCAM_EF, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                    </Grid>
+                                    <!-- Évadés -->
+                                    <Grid ColumnDefinitions="180,*,*,*,*">
+                                        <TextBlock Grid.Column="0" Text="Évadés"
+                                                   FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding UrgEV_H, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                        <NumericUpDown Grid.Column="2"
+                                                       Value="{Binding UrgEV_F, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                        <NumericUpDown Grid.Column="3"
+                                                       Value="{Binding UrgEV_EM, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                        <NumericUpDown Grid.Column="4"
+                                                       Value="{Binding UrgEV_EF, Mode=TwoWay}"
+                                                       Minimum="0" FormatString="0" Margin="3,0"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- ===== DÉCÈS ===== -->
+                        <StackPanel Spacing="12" IsVisible="{Binding ShowDeces}">
+                            <TextBlock Classes="title-section" Text="Décès par service"/>
+                            <StackPanel Spacing="4">
+                                <TextBlock Classes="label" Text="Service *"/>
+                                <ComboBox ItemsSource="{Binding ServicesDecesList}"
+                                          SelectedIndex="{Binding DecesServiceIndex, Mode=TwoWay}"
+                                          HorizontalAlignment="Stretch"/>
+                            </StackPanel>
+                            <Border Background="#FEF2F2" CornerRadius="8" Padding="14">
+                                <Grid RowDefinitions="Auto,Auto">
+                                    <Grid Grid.Row="0" ColumnDefinitions="160,*,*,*">
+                                        <TextBlock Grid.Column="1" Text="Hommes"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="Femmes"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="3" Text="Enfants"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <Grid Grid.Row="1" ColumnDefinitions="160,*,*,*"
+                                          Margin="0,8,0,0">
+                                        <TextBlock Grid.Column="0" Text="Décès"
+                                                   VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding DecesH, Mode=TwoWay}"
+                                                       Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2"
+                                                       Value="{Binding DecesF, Mode=TwoWay}"
+                                                       Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="3"
+                                                       Value="{Binding DecesE, Mode=TwoWay}"
+                                                       Minimum="0" Margin="4,0"/>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                            <Border Background="#FEE2E2" CornerRadius="6" Padding="10,8">
+                                <TextBlock Text="{Binding DecesTotal, StringFormat='Total décès : {0}'}"
+                                           FontSize="13" FontWeight="SemiBold" Foreground="#DC2626"/>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- ===== LABORATOIRE ===== -->
+                        <StackPanel Spacing="12" IsVisible="{Binding ShowLabo}">
+                            <TextBlock Classes="title-section" Text="Examens Laboratoire"/>
+                            <Border Background="#F8FAFC" CornerRadius="8" Padding="14">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="*,*">
+                                        <TextBlock Grid.Column="0" Text="Bactériologie"
+                                                   VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding LaboBackteriologie, Mode=TwoWay}"
+                                                       Minimum="0"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*">
+                                        <TextBlock Grid.Column="0" Text="Biochimie"
+                                                   VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding LaboBiochimie, Mode=TwoWay}"
+                                                       Minimum="0"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*">
+                                        <TextBlock Grid.Column="0" Text="Hématologie"
+                                                   VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding LaboHematologie, Mode=TwoWay}"
+                                                       Minimum="0"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*">
+                                        <TextBlock Grid.Column="0" Text="Hormonologie"
+                                                   VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding LaboHormonologie, Mode=TwoWay}"
+                                                       Minimum="0"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*">
+                                        <TextBlock Grid.Column="0" Text="Immunologie"
+                                                   VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding LaboImmunologie, Mode=TwoWay}"
+                                                       Minimum="0"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*">
+                                        <TextBlock Grid.Column="0" Text="Parasitologie"
+                                                   VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding LaboParasitologie, Mode=TwoWay}"
+                                                       Minimum="0"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*">
+                                        <TextBlock Grid.Column="0" Text="Anatomopathologie"
+                                                   VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding LaboAnatomopath, Mode=TwoWay}"
+                                                       Minimum="0"/>
+                                    </Grid>
+                                    <Border Background="#E0F2FE" CornerRadius="6"
+                                            Padding="10,8" Margin="0,4,0,0">
+                                        <TextBlock Text="{Binding LaboTotal, StringFormat='Total examens : {0}'}"
+                                                   FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="#005BA1"/>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- ===== VACCINATION ===== -->
+                        <StackPanel Spacing="12" IsVisible="{Binding ShowVaccination}">
+                            <TextBlock Classes="title-section" Text="Vaccination"/>
+                            <Border Background="#F8FAFC" CornerRadius="8" Padding="14">
+                                <StackPanel Spacing="8">
+                                    <Grid ColumnDefinitions="*,*,*">
+                                        <TextBlock Grid.Column="1" Text="Masculin"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="Féminin"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*,*">
+                                        <TextBlock Grid.Column="0" Text="BCG/VPO0" FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1" Value="{Binding VacBCG_M, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2" Value="{Binding VacBCG_F, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*,*">
+                                        <TextBlock Grid.Column="0" Text="Penta 1" FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1" Value="{Binding VacPenta1_M, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2" Value="{Binding VacPenta1_F, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*,*">
+                                        <TextBlock Grid.Column="0" Text="Penta 2" FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1" Value="{Binding VacPenta2_M, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2" Value="{Binding VacPenta2_F, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*,*">
+                                        <TextBlock Grid.Column="0" Text="Penta 3" FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1" Value="{Binding VacPenta3_M, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2" Value="{Binding VacPenta3_F, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*,*">
+                                        <TextBlock Grid.Column="0" Text="VAR (Rougeole)" FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1" Value="{Binding VacVAR_M, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2" Value="{Binding VacVAR_F, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*,*">
+                                        <TextBlock Grid.Column="0" Text="VAA (Fièvre Jaune)" FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1" Value="{Binding VacVAA_M, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2" Value="{Binding VacVAA_F, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*,*">
+                                        <TextBlock Grid.Column="0" Text="VPI" FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1" Value="{Binding VacVPI_M, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2" Value="{Binding VacVPI_F, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*,*">
+                                        <TextBlock Grid.Column="0" Text="Td (Tétanos)" FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1" Value="{Binding VacTd_M, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2" Value="{Binding VacTd_F, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*,*">
+                                        <TextBlock Grid.Column="0" Text="HPV" FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1" Value="{Binding VacHPV_M, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2" Value="{Binding VacHPV_F, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- ===== BANQUE DE SANG ===== -->
+                        <StackPanel Spacing="12" IsVisible="{Binding ShowBanqueSang}">
+                            <TextBlock Classes="title-section" Text="Banque de Sang"/>
+                            <Border Background="#F8FAFC" CornerRadius="8" Padding="14">
+                                <StackPanel Spacing="8">
+                                    <Grid ColumnDefinitions="*,*,*">
+                                        <TextBlock Grid.Column="1" Text="Masculin"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="Féminin"
+                                                   Classes="label" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*,*">
+                                        <TextBlock Grid.Column="0" Text="Donneurs reçus" FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1" Value="{Binding BsDonneursRecusM, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2" Value="{Binding BsDonneursRecusF, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*,*">
+                                        <TextBlock Grid.Column="0" Text="Poches collectées" FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1" Value="{Binding BsPochesCollectM, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2" Value="{Binding BsPochesCollectF, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*,*">
+                                        <TextBlock Grid.Column="0" Text="Poches servies" FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1" Value="{Binding BsPochesServiesM, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2" Value="{Binding BsPochesServiesF, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- ===== MORGUE ===== -->
+                        <StackPanel Spacing="12" IsVisible="{Binding ShowMorgue}">
+                            <TextBlock Classes="title-section" Text="Morgue / Thanathopraxie"/>
+                            <Border Background="#F8FAFC" CornerRadius="8" Padding="14">
+                                <StackPanel Spacing="8">
+                                    <Grid ColumnDefinitions="*,*,*,*">
+                                        <TextBlock Grid.Column="1" Text="Hommes" Classes="label" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="Femmes" Classes="label" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="3" Text="Enfants" Classes="label" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*,*,*">
+                                        <TextBlock Grid.Column="0" Text="Nombre de cas" FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1" Value="{Binding MorgueCasH, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2" Value="{Binding MorgueCasF, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="3" Value="{Binding MorgueCasE, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*,*,*">
+                                        <TextBlock Grid.Column="0" Text="Jours de séjour" FontSize="12" VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="1" Value="{Binding MorgueJoursH, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="2" Value="{Binding MorgueJoursF, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                        <NumericUpDown Grid.Column="3" Value="{Binding MorgueJoursE, Mode=TwoWay}" Minimum="0" Margin="4,0"/>
+                                    </Grid>
+                                    <Border Background="#E2E8F0" CornerRadius="6" Padding="10,8" Margin="0,4,0,0">
+                                        <TextBlock Text="{Binding MorgueTotal, StringFormat='Total cas : {0}'}"
+                                                   FontSize="13" FontWeight="SemiBold" Foreground="#1E293B"/>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- ===== MAPE ===== -->
+                        <StackPanel Spacing="12" IsVisible="{Binding ShowMape}">
+                            <StackPanel Spacing="2">
+                                <TextBlock Classes="title-section"
+                                           Text="MAPE — Notification hebdomadaire"/>
+                                <TextBlock Classes="subtitle"
+                                           Text="Maladies à Potentiel Épidémique · Région Nord · HGG"/>
+                            </StackPanel>
+
+                            <!-- Info semaine -->
+                            <Border Background="#FEF3C7" CornerRadius="8" Padding="12,10">
+                                <Grid ColumnDefinitions="*,*,*,*">
+                                    <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,8,0">
+                                        <TextBlock Classes="label" Text="Semaine épi *"/>
+                                        <NumericUpDown Value="{Binding MapeSemaine, Mode=TwoWay}"
+                                                       Minimum="1" Maximum="53" FormatString="0"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Spacing="4" Margin="0,0,8,0">
+                                        <TextBlock Classes="label" Text="Année"/>
+                                        <NumericUpDown Value="{Binding MapeAnnee, Mode=TwoWay}"
+                                                       Minimum="2020" Maximum="2099"
+                                                       FormatString="0"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Spacing="4" Margin="0,0,8,0">
+                                        <TextBlock Classes="label" Text="Du"/>
+                                        <DatePicker SelectedDate="{Binding MapeDateDebut, Mode=TwoWay}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" Spacing="4">
+                                        <TextBlock Classes="label" Text="Au"/>
+                                        <DatePicker SelectedDate="{Binding MapeDateFin, Mode=TwoWay}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Légende -->
+                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <Border Background="#FFFBEB" Width="12" Height="12"
+                                            CornerRadius="2"/>
+                                    <TextBlock Text="Maladie à notification immédiate (*)"
+                                               FontSize="11" Foreground="#64748B"/>
+                                </StackPanel>
+                                <TextBlock Text="CS = Cas Suspects · DC = Décès"
+                                           FontSize="11" Foreground="#64748B"/>
+                            </StackPanel>
+
+                            <!-- DataGrid MAPE — ItemsSource correct -->
+                            <DataGrid ItemsSource="{Binding LignesMape}"
+                                      CanUserResizeColumns="True"
+                                      GridLinesVisibility="All"
+                                      Height="400"
+                                      AutoGenerateColumns="False"
+                                      RowBackground="White">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Maladie / Évènement"
+                                                        Binding="{Binding Maladie}"
+                                                        Width="200" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="CS 0-14M"
+                                                        Binding="{Binding CS_0_14_M, Mode=TwoWay}"
+                                                        Width="72"/>
+                                    <DataGridTextColumn Header="CS 0-14F"
+                                                        Binding="{Binding CS_0_14_F, Mode=TwoWay}"
+                                                        Width="72"/>
+                                    <DataGridTextColumn Header="CS 15-24M"
+                                                        Binding="{Binding CS_15_24_M, Mode=TwoWay}"
+                                                        Width="78"/>
+                                    <DataGridTextColumn Header="CS 15-24F"
+                                                        Binding="{Binding CS_15_24_F, Mode=TwoWay}"
+                                                        Width="78"/>
+                                    <DataGridTextColumn Header="CS 25-64M"
+                                                        Binding="{Binding CS_25_64_M, Mode=TwoWay}"
+                                                        Width="78"/>
+                                    <DataGridTextColumn Header="CS 25-64F"
+                                                        Binding="{Binding CS_25_64_F, Mode=TwoWay}"
+                                                        Width="78"/>
+                                    <DataGridTextColumn Header="CS 65+M"
+                                                        Binding="{Binding CS_65p_M, Mode=TwoWay}"
+                                                        Width="72"/>
+                                    <DataGridTextColumn Header="CS 65+F"
+                                                        Binding="{Binding CS_65p_F, Mode=TwoWay}"
+                                                        Width="72"/>
+                                    <DataGridTextColumn Header="DC 0-14M"
+                                                        Binding="{Binding DC_0_14_M, Mode=TwoWay}"
+                                                        Width="72"/>
+                                    <DataGridTextColumn Header="DC 0-14F"
+                                                        Binding="{Binding DC_0_14_F, Mode=TwoWay}"
+                                                        Width="72"/>
+                                    <DataGridTextColumn Header="DC 15-24M"
+                                                        Binding="{Binding DC_15_24_M, Mode=TwoWay}"
+                                                        Width="78"/>
+                                    <DataGridTextColumn Header="DC 15-24F"
+                                                        Binding="{Binding DC_15_24_F, Mode=TwoWay}"
+                                                        Width="78"/>
+                                    <DataGridTextColumn Header="DC 25-64M"
+                                                        Binding="{Binding DC_25_64_M, Mode=TwoWay}"
+                                                        Width="78"/>
+                                    <DataGridTextColumn Header="DC 25-64F"
+                                                        Binding="{Binding DC_25_64_F, Mode=TwoWay}"
+                                                        Width="78"/>
+                                    <DataGridTextColumn Header="DC 65+M"
+                                                        Binding="{Binding DC_65p_M, Mode=TwoWay}"
+                                                        Width="72"/>
+                                    <DataGridTextColumn Header="DC 65+F"
+                                                        Binding="{Binding DC_65p_F, Mode=TwoWay}"
+                                                        Width="72"/>
+                                    <DataGridTextColumn Header="Échant."
+                                                        Binding="{Binding NbEchantillons, Mode=TwoWay}"
+                                                        Width="72"/>
+                                    <DataGridTextColumn Header="Confirmés"
+                                                        Binding="{Binding CasConfirmes, Mode=TwoWay}"
+                                                        Width="80"/>
+                                    <DataGridTextColumn Header="Tot. CS"
+                                                        Binding="{Binding TotalCas}"
+                                                        Width="70" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Tot. DC"
+                                                        Binding="{Binding TotalDeces}"
+                                                        Width="70" IsReadOnly="True"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <!-- STATUS BAR -->
+        <Border Grid.Row="3" Margin="0,8,0,0"
+                IsVisible="{Binding StatusMessage,
+                    Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                CornerRadius="8" Padding="14,10"
+                Background="{Binding IsSuccess,
+                    Converter={x:Static local:StatutToColorConverter.Instance}}">
+            <TextBlock Text="{Binding StatusMessage}"
+                       FontSize="13" FontWeight="Medium"/>
+        </Border>
+
+    </Grid>
+</UserControl>

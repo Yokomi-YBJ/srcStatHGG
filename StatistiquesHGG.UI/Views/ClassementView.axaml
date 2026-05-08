@@ -1,0 +1,170 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:StatistiquesHGG.UI"
+             x:Class="StatistiquesHGG.UI.Views.ClassementView"
+             Background="#F5F9FC">
+
+    <Grid RowDefinitions="Auto,*" Margin="28,24,28,28">
+
+        <!-- Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,20">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Classes="page-title" Text="Classement des services"/>
+                <TextBlock Classes="subtitle" Text="Performance mensuelle par service"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="0,0,8,0">
+                <TextBlock Text="Période :" VerticalAlignment="Center" FontSize="13" Foreground="#64748B"/>
+                <DatePicker SelectedDate="{Binding SelectedPeriode, Mode=TwoWay}"/>
+            </StackPanel>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <Button Classes="secondary" Content="Actualiser"
+                        Command="{Binding ActualiserCommand}" Height="38"/>
+                <Button Classes="primary" Content="Recalculer"
+                        Command="{Binding RecalculerCommand}" Height="38"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Content -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,280">
+
+            <!-- Ranking table -->
+            <Border Grid.Column="0" Classes="card" Margin="0,0,16,0">
+                <Grid RowDefinitions="Auto,*">
+                    <TextBlock Grid.Row="0" Classes="title-section" Text="Tableau de classement" Margin="0,0,0,12"/>
+                    <ItemsControl Grid.Row="1" ItemsSource="{Binding Classement}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="12,10" Margin="0,0,0,6"
+                                        CornerRadius="8" BorderThickness="1"
+                                        BorderBrush="#E2E8F0" Background="White">
+                                    <Grid ColumnDefinitions="50,*,100,120,100">
+
+                                        <!-- Rang -->
+                                        <Border Grid.Column="0" CornerRadius="20" Width="36" Height="36"
+                                                HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Border.Background>
+                                                <MultiBinding Converter="{x:Static local:RangToColorConverter.Instance}">
+                                                    <Binding Path="Rang"/>
+                                                </MultiBinding>
+                                            </Border.Background>
+                                            <TextBlock Text="{Binding Rang}" Foreground="White"
+                                                       FontSize="14" FontWeight="Bold"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+                                        </Border>
+
+                                        <!-- Service name -->
+                                        <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Service.Libelle}"
+                                                       FontSize="13" FontWeight="SemiBold" Foreground="#1E293B"/>
+                                            <TextBlock Text="{Binding DateCalcul, StringFormat='Calculé le {0:dd/MM/yyyy}'}"
+                                                       FontSize="11" Foreground="#94A3B8"/>
+                                        </StackPanel>
+
+                                        <!-- Score bar -->
+                                        <StackPanel Grid.Column="2" Spacing="3" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Score, StringFormat='{}{0:0.#}%'}"
+                                                       FontSize="14" FontWeight="Bold"
+                                                       Foreground="#005BA1" HorizontalAlignment="Center"/>
+                                            <ProgressBar Value="{Binding Score}" Maximum="100"
+                                                         Height="6" CornerRadius="3"
+                                                         Background="#E2E8F0"/>
+                                        </StackPanel>
+
+                                        <!-- Niveau badge -->
+                                        <Border Grid.Column="3" CornerRadius="16" Padding="10,4"
+                                                HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                Background="{Binding Niveau, Converter={x:Static local:NiveauToColorConverter.Instance}}">
+                                            <TextBlock Text="{Binding NiveauLibelle}"
+                                                       FontSize="11" FontWeight="SemiBold"
+                                                       Foreground="{Binding Niveau, Converter={x:Static local:NiveauToForegroundConverter.Instance}}"/>
+                                        </Border>
+
+                                        <!-- Details count -->
+                                        <TextBlock Grid.Column="4" VerticalAlignment="Center"
+                                                   HorizontalAlignment="Center" FontSize="11"
+                                                   Foreground="#64748B"
+                                                   Text="{Binding Details.Count, StringFormat='{}{0} indicateur(s)'}"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </Border>
+
+            <!-- Legend panel -->
+            <StackPanel Grid.Column="1" Spacing="12">
+
+                <!-- Legend -->
+                <Border Classes="card">
+                    <StackPanel Spacing="10">
+                        <TextBlock Classes="title-section" Text="Niveaux de performance"/>
+
+                        <StackPanel Spacing="8">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Border Grid.Column="0" Background="#D1FAE5" CornerRadius="4"
+                                        Width="12" Height="12" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="Excellent" FontSize="12" FontWeight="SemiBold" Foreground="#059669"/>
+                                    <TextBlock Text="Score ≥ 90%" FontSize="11" Foreground="#64748B"/>
+                                </StackPanel>
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Border Grid.Column="0" Background="#DBEAFE" CornerRadius="4"
+                                        Width="12" Height="12" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="Bon" FontSize="12" FontWeight="SemiBold" Foreground="#1D4ED8"/>
+                                    <TextBlock Text="Score 75 – 89%" FontSize="11" Foreground="#64748B"/>
+                                </StackPanel>
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Border Grid.Column="0" Background="#FEF3C7" CornerRadius="4"
+                                        Width="12" Height="12" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="Moyen" FontSize="12" FontWeight="SemiBold" Foreground="#D97706"/>
+                                    <TextBlock Text="Score 60 – 74%" FontSize="11" Foreground="#64748B"/>
+                                </StackPanel>
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Border Grid.Column="0" Background="#FEE2E2" CornerRadius="4"
+                                        Width="12" Height="12" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="À améliorer" FontSize="12" FontWeight="SemiBold" Foreground="#DC2626"/>
+                                    <TextBlock Text="Score &lt; 60%" FontSize="11" Foreground="#64748B"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Top 3 podium -->
+                <Border Classes="card">
+                    <StackPanel Spacing="8">
+                        <TextBlock Classes="title-section" Text="Podium"/>
+                        <ItemsControl ItemsSource="{Binding Classement}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border IsVisible="{Binding Rang, Converter={x:Static local:RangLessThan4Converter.Instance}}"
+                                            Padding="8,6" Margin="0,2">
+                                        <Grid ColumnDefinitions="30,*,Auto">
+                                            <TextBlock Grid.Column="0" Text="{Binding Rang, StringFormat='#{0}'}"
+                                                       FontSize="14" FontWeight="Bold" Foreground="#005BA1"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Service.Libelle}"
+                                                       FontSize="12" VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding Score, StringFormat='{}{0:0}%'}"
+                                                       FontSize="12" FontWeight="Bold" Foreground="#00A4BD"
+                                                       VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

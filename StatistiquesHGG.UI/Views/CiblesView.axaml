@@ -1,0 +1,147 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:StatistiquesHGG.UI"
+             x:Class="StatistiquesHGG.UI.Views.CiblesView"
+             Background="#F5F9FC">
+
+    <Grid RowDefinitions="Auto,*" Margin="28,24,28,28">
+
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,20">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Classes="page-title" Text="Cibles de performance"/>
+                <TextBlock Classes="subtitle" Text="Définissez les objectifs par service et indicateur"/>
+            </StackPanel>
+            <Button Grid.Column="1" Classes="primary" Content="Nouvelle cible"
+                    Command="{Binding NouveauCommand}" Height="40" VerticalAlignment="Center"/>
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,360">
+
+            <!-- Liste des cibles -->
+            <Border Grid.Column="0" Classes="card" Margin="0,0,16,0">
+                <Grid RowDefinitions="Auto,*">
+                    <TextBlock Grid.Row="0" Classes="title-section"
+                               Text="Cibles configurées" Margin="0,0,0,12"/>
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding Cibles}"
+                              SelectedItem="{Binding SelectedCible, Mode=TwoWay}"
+                              IsReadOnly="True" CanUserResizeColumns="True"
+                              GridLinesVisibility="Horizontal">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Service"
+                                                Binding="{Binding Service.Libelle}" Width="*"/>
+                            <DataGridTextColumn Header="Indicateur"
+                                                Binding="{Binding Indicateur.Libelle}" Width="*"/>
+                            <DataGridTextColumn Header="Cible"
+                                                Binding="{Binding ValeurCible, StringFormat='{}{0:0.#}'}"
+                                                Width="80"/>
+                            <DataGridTextColumn Header="Unité"
+                                                Binding="{Binding Indicateur.Unite}" Width="70"/>
+                            <DataGridTextColumn Header="Période"
+                                                Binding="{Binding Periode}" Width="90"/>
+                            <DataGridTextColumn Header="Actif"
+                                                Binding="{Binding Actif}" Width="70"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <!-- Formulaire -->
+            <Border Grid.Column="1" Classes="card" IsVisible="{Binding IsEditing}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="14">
+                        <TextBlock Classes="title-section"
+                                   Text="{Binding SelectedCible,
+                                          Converter={x:Static local:NullToTextConverter.Instance},
+                                          ConverterParameter='Modifier cible|Nouvelle cible'}"/>
+
+                        <!-- Service -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Classes="label" Text="Service *"/>
+                            <ComboBox ItemsSource="{Binding Services}"
+                                      SelectedItem="{Binding FormService, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch"
+                                      PlaceholderText="Choisir un service">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Libelle}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <!-- Indicateur -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Classes="label" Text="Indicateur *"/>
+                            <ComboBox ItemsSource="{Binding Indicateurs}"
+                                      SelectedItem="{Binding FormIndicateur, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch"
+                                      PlaceholderText="Choisir un indicateur">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Libelle}" FontSize="13"/>
+                                            <TextBlock Text="{Binding Unite, StringFormat='Unité : {0}'}"
+                                                       FontSize="11" Foreground="#94A3B8"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <!-- Valeur cible -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Classes="label" Text="Valeur cible *"/>
+                            <NumericUpDown Value="{Binding FormValeurCible, Mode=TwoWay}"
+                                           Minimum="0" Maximum="999999"
+                                           Increment="10" FormatString="0.##"/>
+                        </StackPanel>
+
+                        <!-- Période -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Classes="label" Text="Fréquence"/>
+                            <ComboBox ItemsSource="{Binding PeriodeOptions}"
+                                      SelectedIndex="{Binding FormPeriodeIndex, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+
+                        <!-- Actif -->
+                        <CheckBox Content="Cible active"
+                                  IsChecked="{Binding FormActif, Mode=TwoWay}"/>
+
+                        <!-- Status -->
+                        <Border IsVisible="{Binding StatusMessage,
+                                    Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                Background="#F0F9FF" CornerRadius="6" Padding="10,8">
+                            <TextBlock Text="{Binding StatusMessage}"
+                                       FontSize="12" TextWrapping="Wrap"/>
+                        </Border>
+
+                        <!-- Boutons -->
+                        <StackPanel Spacing="8">
+                            <Button Classes="primary" Content="Enregistrer"
+                                    Command="{Binding EnregistrerCommand}"
+                                    HorizontalAlignment="Stretch" Height="40"/>
+                            <Button Classes="danger" Content="Supprimer"
+                                    Command="{Binding SupprimerCommand}"
+                                    IsVisible="{Binding HasSelection}"
+                                    HorizontalAlignment="Stretch" Height="36"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- État vide -->
+            <Border Grid.Column="1" Classes="card" IsVisible="{Binding !IsEditing}">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                            Spacing="14" Margin="0,20">
+                    <Path Data="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"
+                          Fill="#CBD5E1" Width="44" Height="44" Stretch="Uniform"
+                          HorizontalAlignment="Center"/>
+                    <TextBlock Text="Sélectionnez une cible ou créez-en une nouvelle"
+                               Foreground="#94A3B8" FontSize="13" TextAlignment="Center"
+                               TextWrapping="Wrap" MaxWidth="220"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

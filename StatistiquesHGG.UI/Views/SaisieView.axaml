@@ -1,0 +1,277 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:StatistiquesHGG.UI"
+             x:Class="StatistiquesHGG.UI.Views.SaisieView"
+             Background="#F5F9FC">
+
+    <Grid RowDefinitions="Auto,*" Margin="28,24,28,28">
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,20">
+            <TextBlock Classes="page-title" Text="Saisie des données"/>
+            <TextBlock Classes="subtitle" Text="Enregistrez les données médicales par service"/>
+        </StackPanel>
+
+        <!-- Main content -->
+        <Grid Grid.Row="1" ColumnDefinitions="320,*">
+
+            <!-- Left: Form controls -->
+            <Border Grid.Column="0" Classes="card" Margin="0,0,16,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="14">
+                        <TextBlock Classes="title-section" Text="Paramètres"/>
+
+                        <!-- Type de données -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Classes="label" Text="Type de données"/>
+                            <ListBox ItemsSource="{Binding TypesDonnee}"
+                                     SelectedIndex="{Binding SelectedTypeIndex, Mode=TwoWay}"
+                                     Background="White" BorderBrush="#E2E8F0" BorderThickness="1"
+                                     CornerRadius="6" Padding="4">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" Padding="8,6" FontSize="13"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+
+                        <!-- Service -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Classes="label" Text="Service *"/>
+                            <ComboBox ItemsSource="{Binding Services}"
+                                      SelectedItem="{Binding SelectedService, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch"
+                                      PlaceholderText="Sélectionner un service">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Libelle}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <!-- Status message -->
+                        <Border IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                CornerRadius="6" Padding="10,8">
+                            <Border.Background>
+                                <MultiBinding Converter="{x:Static local:BoolToColorConverter.Instance}">
+                                    <Binding Path="IsSuccess"/>
+                                </MultiBinding>
+                            </Border.Background>
+                            <TextBlock Text="{Binding StatusMessage}" FontSize="12"
+                                       TextWrapping="Wrap"/>
+                        </Border>
+
+                        <!-- Action buttons -->
+                        <StackPanel Spacing="8">
+                            <Button Classes="primary" Content="Enregistrer"
+                                    Command="{Binding EnregistrerCommand}"
+                                    HorizontalAlignment="Stretch" Height="40"/>
+                            <Button Classes="secondary" Content="Réinitialiser"
+                                    Command="{Binding ReinitialiserCommand}"
+                                    HorizontalAlignment="Stretch" Height="36"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Right: Dynamic form fields -->
+            <Grid Grid.Column="1" RowDefinitions="*,Auto">
+                <Border Grid.Row="0" Classes="card" Margin="0,0,0,16">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Spacing="16">
+                            <TextBlock Classes="title-section" Text="Formulaire de saisie"/>
+
+                            <!-- CONSULTATION FORM -->
+                            <StackPanel Spacing="12" IsVisible="{Binding IsConsultation}">
+                                <Grid ColumnDefinitions="*,*">
+                                    <StackPanel Grid.Column="0" Spacing="4">
+                                        <TextBlock Classes="label" Text="Genre"/>
+                                        <ComboBox ItemsSource="{Binding GenreOptions}"
+                                                  SelectedIndex="{Binding ConsultGenreIndex, Mode=TwoWay}"
+                                                  HorizontalAlignment="Stretch"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Spacing="4">
+                                        <TextBlock Classes="label" Text="Âge"/>
+                                        <NumericUpDown Value="{Binding ConsultAge, Mode=TwoWay}"
+                                                       Minimum="0" Maximum="120"
+                                                       FormatString="0"/>
+                                    </StackPanel>
+                                </Grid>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="label" Text="Motif de consultation"/>
+                                    <TextBox Text="{Binding ConsultMotif, Mode=TwoWay}"
+                                             Watermark="Motif de la consultation"/>
+                                </StackPanel>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="label" Text="Diagnostic"/>
+                                    <TextBox Text="{Binding ConsultDiagnostic, Mode=TwoWay}"
+                                             Watermark="Diagnostic posé"/>
+                                </StackPanel>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="label" Text="Orientation"/>
+                                    <ComboBox ItemsSource="{Binding OrientationOptions}"
+                                              SelectedIndex="{Binding ConsultOrientationIndex, Mode=TwoWay}"
+                                              HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                                <CheckBox Content="Nouvelle consultation (décocher si ancienne)"
+                                          IsChecked="{Binding EstNouvelleConsultation, Mode=TwoWay}"/>
+                            </StackPanel>
+
+                            <!-- HOSPITALISATION FORM -->
+                            <StackPanel Spacing="12" IsVisible="{Binding IsHospitalisation}">
+                                <Grid ColumnDefinitions="*,*">
+                                    <StackPanel Grid.Column="0" Spacing="4">
+                                        <TextBlock Classes="label" Text="Genre"/>
+                                        <ComboBox ItemsSource="{Binding GenreOptions}"
+                                                  SelectedIndex="{Binding HospGenreIndex, Mode=TwoWay}"
+                                                  HorizontalAlignment="Stretch"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Spacing="4">
+                                        <TextBlock Classes="label" Text="Âge"/>
+                                        <NumericUpDown Value="{Binding HospAge, Mode=TwoWay}"
+                                                       Minimum="0" Maximum="120"/>
+                                    </StackPanel>
+                                </Grid>
+                                <Grid ColumnDefinitions="*,*">
+                                    <StackPanel Grid.Column="0" Spacing="4">
+                                        <TextBlock Classes="label" Text="Date d'admission *"/>
+                                        <DatePicker SelectedDate="{Binding HospDateAdmission, Mode=TwoWay}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Spacing="4">
+                                        <TextBlock Classes="label" Text="Date de sortie"/>
+                                        <DatePicker SelectedDate="{Binding HospDateSortie, Mode=TwoWay}"/>
+                                    </StackPanel>
+                                </Grid>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="label" Text="Diagnostic principal"/>
+                                    <TextBox Text="{Binding HospDiagnostic, Mode=TwoWay}"
+                                             Watermark="Diagnostic principal"/>
+                                </StackPanel>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="label" Text="Mode de sortie"/>
+                                    <ComboBox ItemsSource="{Binding ModeSortieOptions}"
+                                              SelectedIndex="{Binding HospModeSortieIndex, Mode=TwoWay}"
+                                              HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- ACCOUCHEMENT FORM -->
+                            <StackPanel Spacing="12" IsVisible="{Binding IsAccouchement}">
+                                <Grid ColumnDefinitions="*,*">
+                                    <StackPanel Grid.Column="0" Spacing="4">
+                                        <TextBlock Classes="label" Text="Type d'accouchement *"/>
+                                        <ComboBox ItemsSource="{Binding TypeAccouchementOptions}"
+                                                  SelectedIndex="{Binding AccTypeIndex, Mode=TwoWay}"
+                                                  HorizontalAlignment="Stretch"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Spacing="4">
+                                        <TextBlock Classes="label" Text="Genre du nouveau-né"/>
+                                        <ComboBox ItemsSource="{Binding GenreOptions}"
+                                                  SelectedIndex="{Binding AccGenreNNIndex, Mode=TwoWay}"
+                                                  HorizontalAlignment="Stretch"/>
+                                    </StackPanel>
+                                </Grid>
+                                <Grid ColumnDefinitions="*,*">
+                                    <StackPanel Grid.Column="0" Spacing="4">
+                                        <TextBlock Classes="label" Text="Poids de naissance (kg)"/>
+                                        <NumericUpDown Value="{Binding AccPoids, Mode=TwoWay}"
+                                                       Minimum="0" Maximum="10"
+                                                       Increment="0.1" FormatString="0.00"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Spacing="4">
+                                        <TextBlock Classes="label" Text="Durée séjour (jours)"/>
+                                        <NumericUpDown Value="{Binding AccDureeSejour, Mode=TwoWay}"
+                                                       Minimum="1" Maximum="30"/>
+                                    </StackPanel>
+                                </Grid>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="label" Text="Complications éventuelles"/>
+                                    <TextBox Text="{Binding AccComplications, Mode=TwoWay}"
+                                             Watermark="Aucune complication" Height="60"
+                                             AcceptsReturn="True"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- LABO FORM -->
+                            <StackPanel Spacing="12" IsVisible="{Binding IsExamenLabo}">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="label" Text="Type d'examen *"/>
+                                    <TextBox Text="{Binding LaboTypeExamen, Mode=TwoWay}"
+                                             Watermark="Ex : NFS, Biochimie, Bactériologie..."/>
+                                </StackPanel>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="label" Text="Résultat"/>
+                                    <TextBox Text="{Binding LaboResultat, Mode=TwoWay}"
+                                             Watermark="Résultat de l'examen" Height="80"
+                                             AcceptsReturn="True"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- IMAGERIE FORM -->
+                            <StackPanel Spacing="12" IsVisible="{Binding IsExamenImagerie}">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="label" Text="Type d'imagerie *"/>
+                                    <ComboBox ItemsSource="{Binding TypesImagerie}"
+                                              SelectedIndex="{Binding ImgTypeIndex, Mode=TwoWay}"
+                                              HorizontalAlignment="Stretch">
+                                    </ComboBox>
+                                </StackPanel>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="label" Text="Résultat / Compte-rendu"/>
+                                    <TextBox Text="{Binding ImgResultat, Mode=TwoWay}"
+                                             Watermark="Compte rendu radiologique..." Height="80"
+                                             AcceptsReturn="True"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- REHABILITATION FORM -->
+                            <StackPanel Spacing="12" IsVisible="{Binding IsRehabilitation}">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="label" Text="Type de rééducation *"/>
+                                    <ComboBox ItemsSource="{Binding TypesReeducation}"
+                                              SelectedIndex="{Binding RehabTypeIndex, Mode=TwoWay}"
+                                              HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                                <Grid ColumnDefinitions="*,*">
+                                    <StackPanel Grid.Column="0" Spacing="4">
+                                        <TextBlock Classes="label" Text="Genre patient"/>
+                                        <ComboBox ItemsSource="{Binding GenreOptions}"
+                                                  SelectedIndex="{Binding RehabGenreIndex, Mode=TwoWay}"
+                                                  HorizontalAlignment="Stretch"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Spacing="4">
+                                        <TextBlock Classes="label" Text="Nombre de séances"/>
+                                        <NumericUpDown Value="{Binding RehabNbSeances, Mode=TwoWay}"
+                                                       Minimum="1" Maximum="50"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+
+                <!-- Recent entries table -->
+                <Border Grid.Row="1" Classes="card">
+                    <StackPanel Spacing="8">
+                        <TextBlock Classes="title-section" Text="Dernières saisies"/>
+                        <DataGrid ItemsSource="{Binding DernieresSaisies}"
+                                  Height="160" IsReadOnly="True"
+                                  CanUserResizeColumns="True"
+                                  GridLinesVisibility="Horizontal">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                                <DataGridTextColumn Header="Type" Binding="{Binding TypeDonnee}" Width="120"/>
+                                <DataGridTextColumn Header="Service" Binding="{Binding Service.Libelle}" Width="*"/>
+                                <DataGridTextColumn Header="Statut" Binding="{Binding Statut}" Width="100"/>
+                                <DataGridTextColumn Header="Date saisie" Binding="{Binding DateSaisie, StringFormat='dd/MM HH:mm'}" Width="120"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- ClosedXML 0.103+ est compatible avec DocumentFormat.OpenXml 3.x -->
+    <PackageReference Include="ClosedXML" Version="0.104.0" />
+    <PackageReference Include="QuestPDF" Version="2024.3.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StatistiquesHGG.Core\StatistiquesHGG.Core.csproj" />
+    <ProjectReference Include="..\StatistiquesHGG.Infrastructure\StatistiquesHGG.Infrastructure.csproj" />
+    <ProjectReference Include="..\StatistiquesHGG.Business\StatistiquesHGG.Business.csproj" />
+  </ItemGroup>
+</Project>

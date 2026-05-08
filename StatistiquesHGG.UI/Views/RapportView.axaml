@@ -1,0 +1,109 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:StatistiquesHGG.UI"
+             x:Class="StatistiquesHGG.UI.Views.RapportView"
+             Background="#F5F9FC">
+
+    <Grid RowDefinitions="Auto,*" Margin="28,24,28,28">
+
+        <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,20">
+            <TextBlock Classes="page-title" Text="Rapports"/>
+            <TextBlock Classes="subtitle" Text="Générez et exportez vos rapports standardisés"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" ColumnDefinitions="340,*">
+
+            <StackPanel Grid.Column="0" Spacing="16" Margin="0,0,16,0">
+
+                <Border Classes="card">
+                    <StackPanel Spacing="14">
+                        <TextBlock Classes="title-section" Text="Rapport Mensuel d'Activités (RMA)"/>
+                        <TextBlock Text="Consultations, hospitalisations, actes chirurgicaux et statistiques mensuelles."
+                                   FontSize="12" Foreground="#64748B" TextWrapping="Wrap"/>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Classes="label" Text="Type de période"/>
+                            <ComboBox ItemsSource="{Binding TypesPeriode}"
+                                      SelectedIndex="{Binding TypePeriodeIndex, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+
+                        <StackPanel Spacing="4" IsVisible="{Binding IsPeriodeSimple}">
+                            <TextBlock Classes="label" Text="Mois"/>
+                            <DatePicker SelectedDate="{Binding SelectedPeriode, Mode=TwoWay}"/>
+                        </StackPanel>
+
+                        <StackPanel Spacing="12" IsVisible="{Binding IsPeriodelarge}">
+                            <StackPanel Spacing="4">
+                                <TextBlock Classes="label" Text="Date de début"/>
+                                <DatePicker SelectedDate="{Binding DateDebut, Mode=TwoWay}"/>
+                            </StackPanel>
+                            <StackPanel Spacing="4">
+                                <TextBlock Classes="label" Text="Date de fin"/>
+                                <DatePicker SelectedDate="{Binding DateFin, Mode=TwoWay}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <Border IsVisible="{Binding StatusMessage,
+                                    Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                CornerRadius="6" Padding="10,8" Background="#F0F9FF">
+                            <TextBlock Text="{Binding StatusMessage}"
+                                       FontSize="12" TextWrapping="Wrap" Foreground="#1E293B"/>
+                        </Border>
+
+                        <Grid ColumnDefinitions="*,*">
+                            <Button Grid.Column="0" Classes="primary" Content="Excel (.xlsx)"
+                                    Command="{Binding GenererRMAExcelCommand}"
+                                    Height="40" Margin="0,0,4,0" IsEnabled="{Binding !IsGenerating}"/>
+                            <Button Grid.Column="1" Classes="teal" Content="PDF"
+                                    Command="{Binding GenererRMAPDFCommand}"
+                                    Height="40" Margin="4,0,0,0" IsEnabled="{Binding !IsGenerating}"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="card" Opacity="0.65">
+                    <StackPanel Spacing="10">
+                        <TextBlock Classes="title-section" Text="Rapport MAPE"/>
+                        <TextBlock Text="Maladies à Potentiel Épidémique — hebdomadaire."
+                                   FontSize="12" Foreground="#64748B" TextWrapping="Wrap"/>
+                        <Border Background="#F1F5F9" CornerRadius="6" Padding="10,8">
+                            <TextBlock Text="Disponible prochainement"
+                                       FontSize="12" Foreground="#94A3B8" TextAlignment="Center"/>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <Button Classes="secondary" Content="Ouvrir dossier des rapports"
+                        Command="{Binding OuvrirDossierCommand}"
+                        HorizontalAlignment="Stretch" Height="38"/>
+            </StackPanel>
+
+            <Border Grid.Column="1" Classes="card">
+                <Grid RowDefinitions="Auto,*">
+                    <TextBlock Grid.Row="0" Classes="title-section"
+                               Text="Historique des rapports" Margin="0,0,0,12"/>
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding Rapports}"
+                              IsReadOnly="True" CanUserResizeColumns="True"
+                              GridLinesVisibility="Horizontal">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="70"/>
+                            <DataGridTextColumn Header="Titre" Binding="{Binding Titre}" Width="*"/>
+                            <DataGridTextColumn Header="Période"
+                                                Binding="{Binding Periode, StringFormat='MMM yyyy'}"
+                                                Width="100"/>
+                            <DataGridTextColumn Header="Généré par"
+                                                Binding="{Binding GenerePar.NomComplet}"
+                                                Width="130"/>
+                            <DataGridTextColumn Header="Date"
+                                                Binding="{Binding DateGeneration, StringFormat='dd/MM/yyyy HH:mm'}"
+                                                Width="130"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+        </Grid>
+    </Grid>
+</UserControl>

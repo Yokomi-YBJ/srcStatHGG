@@ -1,0 +1,173 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:StatistiquesHGG.UI"
+        xmlns:views="clr-namespace:StatistiquesHGG.UI.Views"
+        x:Class="StatistiquesHGG.UI.Views.MainWindow"
+        Icon="/Assets/logo_hgg.png"
+        Title="HGG — Statistiques Hospitalières"
+        Width="1280" Height="800"
+        MinWidth="1100" MinHeight="650"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F9FC">
+
+    <Grid ColumnDefinitions="240,*">
+
+        <!-- ========== SIDEBAR ========== -->
+        <Border Grid.Column="0" Background="#0A2342"
+                BoxShadow="2 0 8 0 #20000000">
+            <Grid RowDefinitions="Auto,*,Auto">
+
+                <!-- Logo / Header -->
+                <Border Grid.Row="0" Padding="16,20,16,16"
+                        BorderBrush="#1E3A5F" BorderThickness="0,0,0,1">
+                    <StackPanel Spacing="8">
+                        <Image Source="avares://StatistiquesHGG.UI/Assets/logo_hgg.png"
+                               Height="48" HorizontalAlignment="Left" Stretch="Uniform"/>
+                        <TextBlock Text="Statistiques HGG"
+                                   Foreground="White" FontSize="13" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding UserRole}"
+                                   Foreground="#7FB9DD" FontSize="11" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Navigation Items -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="2" Margin="0,12,0,12">
+
+                        <!-- Dashboard -->
+                        <Button Classes="nav-item" Classes.active="{Binding IsDashboardActive}"
+                                Command="{Binding NavigateCommand}"
+                                CommandParameter="Dashboard">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <Path Data="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"
+                                      Fill="White" Width="18" Height="18" Stretch="Uniform"
+                                      VerticalAlignment="Center" Opacity="0.85"/>
+                                <TextBlock Text="Tableau de bord" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Saisie -->
+                        <Button Classes="nav-item" Classes.active="{Binding IsSaisieActive}"
+                                Command="{Binding NavigateCommand}"
+                                CommandParameter="Saisie"
+                                IsVisible="{Binding CanSaisir}">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <Path Data="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                                      Fill="White" Width="18" Height="18" Stretch="Uniform"
+                                      VerticalAlignment="Center" Opacity="0.85"/>
+                                <TextBlock Text="Saisie des données" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- v5: REMOVE Validation menu completely -->
+
+                        <!-- Performances (Classement services) -->
+                        <Button Classes="nav-item" Classes.active="{Binding IsClassementActive}"
+                                Command="{Binding NavigateCommand}"
+                                CommandParameter="Classement"
+                                IsVisible="{Binding CanViewPerformances}">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <Path Data="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"
+                                      Fill="White" Width="18" Height="18" Stretch="Uniform"
+                                      VerticalAlignment="Center" Opacity="0.85"/>
+                                <TextBlock Text="Performances" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Rapports (SuperAdmin only) -->
+                        <Button Classes="nav-item" Classes.active="{Binding IsRapportsActive}"
+                                Command="{Binding NavigateCommand}"
+                                CommandParameter="Rapports"
+                                IsVisible="{Binding CanRapports}">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"
+                                      Fill="White" Width="18" Height="18" Stretch="Uniform"
+                                      VerticalAlignment="Center" Opacity="0.85"/>
+                                <TextBlock Text="Rapports" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Cibles de performance (SuperAdmin only) -->
+                        <Button Classes="nav-item" Classes.active="{Binding IsCiblesActive}"
+                                Command="{Binding NavigateCommand}"
+                                CommandParameter="Cibles"
+                                IsVisible="{Binding CanAdmin}">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <Path Data="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"
+                                      Fill="White" Width="18" Height="18" Stretch="Uniform"
+                                      VerticalAlignment="Center" Opacity="0.85"/>
+                                <TextBlock Text="Cibles performance" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Séparateur -->
+                        <Border Height="1" Background="#1E3A5F" Margin="16,8" IsVisible="{Binding CanAdmin}"/>
+
+                        <!-- Admin -->
+                        <Button Classes="nav-item" Classes.active="{Binding IsAdminActive}"
+                                Command="{Binding NavigateCommand}"
+                                CommandParameter="Admin"
+                                IsVisible="{Binding CanAdmin}">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <Path Data="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4c1.4 0 2.8 1.1 2.8 2.5S13.4 10 12 10c-1.4 0-2.8-1.1-2.8-2.5S10.6 5 12 5zm0 9c-2.3 0-4.3-1.1-5.5-2.9.03-1.9 3.7-3 5.5-3s5.47 1.1 5.5 3C16.3 12.9 14.3 14 12 14z"
+                                      Fill="White" Width="18" Height="18" Stretch="Uniform"
+                                      VerticalAlignment="Center" Opacity="0.85"/>
+                                <TextBlock Text="Gestion utilisateurs" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- User info + Logout -->
+                <Border Grid.Row="2" Padding="16,12"
+                        BorderBrush="#1E3A5F" BorderThickness="0,1,0,0">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="{Binding UserName}"
+                                       Foreground="White" FontSize="12" FontWeight="SemiBold"/>
+                            <TextBlock Text="Connecté" Foreground="#7FB9DD" FontSize="10"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Classes="icon"
+                                Click="OnLogoutClicked"
+                                ToolTip.Tip="Déconnexion">
+                            <Path Data="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
+                                  Fill="#CBD5E1" Width="18" Height="18" Stretch="Uniform"/>
+                        </Button>
+                    </Grid>
+                </Border>
+
+            </Grid>
+        </Border>
+
+        <!-- ========== CONTENT AREA ========== -->
+        <Border Grid.Column="1" Background="#F5F9FC">
+            <ContentControl Content="{Binding CurrentPage}">
+                <ContentControl.DataTemplates>
+                    <DataTemplate DataType="{x:Type local:DashboardViewModel}">
+                        <views:DashboardView/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type local:SaisieRmaViewModel}">
+                        <views:SaisieRmaView/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type local:ValidationViewModel}">
+                        <views:ValidationView/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type local:RapportViewModel}">
+                        <views:RapportView/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type local:ClassementViewModel}">
+                        <views:ClassementView/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type local:CiblesViewModel}">
+                        <views:CiblesView/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type local:UtilisateursViewModel}">
+                        <views:UtilisateursView/>
+                    </DataTemplate>
+                </ContentControl.DataTemplates>
+            </ContentControl>
+        </Border>
+
+    </Grid>
+</Window>

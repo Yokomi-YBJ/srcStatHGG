@@ -1,0 +1,102 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:StatistiquesHGG.UI"
+        x:Class="StatistiquesHGG.UI.Views.LoginWindow"
+        Icon="/Assets/logo_hgg.png"
+        Title="HGG Statistiques — Connexion"
+        Width="900" Height="560"
+        MinWidth="800" MinHeight="520"
+        CanResize="False"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid ColumnDefinitions="420,*" Background="#F5F9FC">
+
+        <!-- LEFT PANEL — blue brand -->
+        <Border Grid.Column="0" Background="#005BA1" CornerRadius="0">
+            <Grid RowDefinitions="Auto,*,Auto">
+
+                <!-- Logo + Hospital name -->
+                <StackPanel Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" Spacing="16">
+                    <Border CornerRadius="8" ClipToBounds="True" Width="180" Height="180"  Background="White">
+                        <Image Source="avares://StatistiquesHGG.UI/Assets/logo_hgg.png"
+                            Width="140" Height="140"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Stretch="Uniform" />
+                    </Border>
+                    <TextBlock Text="Système de Statistiques Hospitalières"
+                               Foreground="White" FontSize="15" FontWeight="SemiBold"
+                               TextWrapping="Wrap" Opacity="0.9"/>
+                    <TextBlock Text="Centralisation · Analyse · Reporting"
+                               Foreground="#BAE6FD" FontSize="13" LetterSpacing="1"/>
+                </StackPanel>
+
+                
+
+                <!-- Footer note -->
+                <TextBlock Grid.Row="2" Text="Hôpital Général de Garoua - © 2026"
+                           Foreground="#7FB9DD" FontSize="11" Margin="48,0,48,32"
+                           HorizontalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- RIGHT PANEL — login form -->
+        <Border Grid.Column="1" Background="White" Padding="56,0">
+            <StackPanel VerticalAlignment="Center" Spacing="0">
+
+                <!-- Title -->
+                <TextBlock Text="Connexion" FontSize="28" FontWeight="Bold"
+                           Foreground="#0F172A" Margin="0,0,0,6"/>
+                <TextBlock Text="Accédez à votre espace statistiques"
+                           FontSize="13" Foreground="#64748B" Margin="0,0,0,36"/>
+
+                <!-- Login field -->
+                <TextBlock Text="Identifiant" Classes="label"/>
+                <TextBox Text="{Binding Login, Mode=TwoWay}"
+                         Watermark="Votre identifiant de connexion"
+                         Margin="0,0,0,16"/>
+
+                <!-- Password field -->
+                <TextBlock Text="Mot de passe" Classes="label"/>
+                <TextBox Text="{Binding Password, Mode=TwoWay}"
+                         PasswordChar="*"
+                         Watermark="••••••••"
+                         Margin="0,0,0,8"/>
+
+                <!-- Error message -->
+                <Border Background="#FEE2E2" CornerRadius="6" Padding="12,8"
+                        Margin="0,0,0,16"
+                        IsVisible="{Binding HasError}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+                              Fill="#DC2626" Width="16" Height="16" Stretch="Uniform"
+                              VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   Foreground="#DC2626" FontSize="12"
+                                   TextWrapping="Wrap" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Login button -->
+                <Button Classes="primary" Content="Se connecter"
+                        Command="{Binding LoginCommand}"
+                        HorizontalAlignment="Center"
+                        Height="44" FontSize="14"
+                        IsEnabled="{Binding !IsLoading}"/>
+
+                <!-- Loading indicator -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                            Margin="0,12,0,0" Spacing="8"
+                            IsVisible="{Binding IsLoading}">
+                    <TextBlock Text="Connexion en cours..." FontSize="12" Foreground="#64748B"/>
+                </StackPanel>
+
+                <!-- Bottom hint -->
+                <TextBlock Text="Contactez l'administrateur si vous avez oublié vos identifiants."
+                           FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Center"
+                           Margin="0,24,0,0" TextWrapping="Wrap" TextAlignment="Center"/>
+
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
