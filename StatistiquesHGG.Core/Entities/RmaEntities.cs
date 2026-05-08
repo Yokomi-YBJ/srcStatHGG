@@ -256,6 +256,48 @@ public class SaisieMape
     public List<LigneMape> Lignes  { get; set; } = new();
 }
 
+// ===== PATIENT TRACKING (v5: Formulaire B - Mouvement & Suivi) =====
+/// <summary>
+/// Registre des patients pour suivi consultation/hospitalisation/décès
+/// </summary>
+public class Patient
+{
+    public int Id { get; set; }
+    public string Matricule { get; set; } = string.Empty;  // Identifiant unique patient
+    public string Nom { get; set; } = string.Empty;
+    public string Prenoms { get; set; } = string.Empty;
+    public DateTime DateNaissance { get; set; }
+    public string Sexe { get; set; } = string.Empty;  // M/F
+    public string Quartier { get; set; } = string.Empty;
+    public int? ServiceIdActuel { get; set; }  // Service où le patient est actuellement
+    public Service? ServiceActuel { get; set; }
+    public DateTime DateCreation { get; set; } = DateTime.Now;
+    public bool Actif { get; set; } = true;
+    
+    // Navigation
+    public List<PatientMouvement> Mouvements { get; set; } = new();
+}
+
+/// <summary>
+/// Historique des mouvements d'un patient (consultation → hospit → décès/sortie)
+/// </summary>
+public class PatientMouvement
+{
+    public int Id { get; set; }
+    public int PatientId { get; set; }
+    public Patient? Patient { get; set; }
+    public string TypeMouvement { get; set; } = string.Empty;  // Consultation, Hospitalisation, Deces, Sortie
+    public int? ServiceId { get; set; }
+    public Service? Service { get; set; }
+    public DateTime DateMouvement { get; set; }
+    public string Motif { get; set; } = string.Empty;
+    public int? DureeJours { get; set; }  // Pour hospitalisation
+    public DateTime? DateSortie { get; set; }
+    public bool EstNouveauPatient { get; set; }  // True si première création fiche
+    public bool TransfereAMorgue { get; set; }
+    public int? MorgueEntreeId { get; set; }
+}
+
 public class LigneMape
 {
     public int       Id          { get; set; }
