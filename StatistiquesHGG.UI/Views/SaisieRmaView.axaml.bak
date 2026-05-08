@@ -9,7 +9,7 @@
         <!-- HEADER -->
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
             <StackPanel Grid.Column="0" Spacing="2">
-                <TextBlock Classes="page-title" Text="Saisie RMA / MAPE &amp; Suivi Patient"/>
+                <TextBlock Classes="page-title" Text="Saisie RMA / MAPE"/>
                 <TextBlock Classes="subtitle"
                            Text="{Binding ServiceNom, StringFormat='Service : {0}'}"/>
             </StackPanel>
@@ -47,51 +47,8 @@
             </StackPanel>
         </Border>
 
-        <!-- RECHERCHE PATIENT - Section ajoutée pour le suivi patient -->
-        <Border Grid.Row="2" Classes="card-small" Margin="0,0,0,10" Padding="12,10"
-                IsVisible="{Binding ShowRecherchePatient}">
-            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*,Auto">
-                
-                <!-- Champ recherche -->
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Matricule :" 
-                           Classes="label" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                <TextBox Grid.Row="0" Grid.Column="1" 
-                         Text="{Binding RechercheMatricule, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         Watermark="Saisir le matricule du patient..."
-                         Margin="0,0,8,0"/>
-                <Button Grid.Row="0" Grid.Column="2" Classes="primary"
-                        Command="{Binding RechercherPatientCommand}"
-                        Padding="16,0">
-                    <TextBlock Text="Rechercher"/>
-                </Button>
-                
-                <!-- Suggestions autocomplétion -->
-                <ListBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
-                         ItemsSource="{Binding PatientsSuggeres}"
-                         SelectedItem="{Binding PatientSelectionne}"
-                         MaxHeight="150" Margin="0,8,0,0"
-                         IsVisible="{Binding PatientsSuggeres.Count, Converter={StaticResource IntToBoolConverter}}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Matricule, StringFormat='{}{0} - {Nom} {Prenoms}'}"/>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                
-                <!-- Info patient sélectionné -->
-                <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
-                        Background="#E0F2FE" CornerRadius="6" Padding="10,8"
-                        Margin="0,8,0,0"
-                        IsVisible="{Binding PatientSelectionne, Converter={StaticResource NullToBoolConverter}}">
-                    <TextBlock Text="{Binding PatientAffiche}" 
-                               FontSize="13" FontWeight="SemiBold"
-                               Foreground="#005BA1"/>
-                </Border>
-            </Grid>
-        </Border>
-
         <!-- BODY : Menu gauche + Formulaire droit -->
-        <Grid Grid.Row="3" ColumnDefinitions="180,*">
+        <Grid Grid.Row="2" ColumnDefinitions="180,*">
 
             <!-- MENU ONGLETS -->
             <Border Grid.Column="0" Background="#0A2342"
@@ -257,26 +214,6 @@
                             </StackPanel>
                         </Button>
 
-                        <!-- Séparateur MOUVEMENT PATIENT -->
-                        <Border Height="1" Background="#1E3A5F" Margin="8,6"/>
-                        <TextBlock Text="SUIVI PATIENT" Foreground="#7FB9DD"
-                                   FontSize="10" FontWeight="Bold"
-                                   Margin="10,0,0,4" LetterSpacing="1"/>
-
-                        <!-- Onglet Mouvement Patient -->
-                        <Button Classes="nav-item"
-                                Classes.active="{Binding ShowMouvementPatient}"
-                                Command="{Binding NavigateOngletCommand}"
-                                CommandParameter="10">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-3.5l6-4.5-6-4.5v9z"
-                                      Fill="#10B981" Width="14" Height="14"
-                                      Stretch="Uniform" VerticalAlignment="Center"/>
-                                <TextBlock Text="Mouvement Patient"
-                                           VerticalAlignment="Center" FontSize="12"/>
-                            </StackPanel>
-                        </Button>
-
                     </StackPanel>
                 </ScrollViewer>
             </Border>
@@ -285,116 +222,6 @@
             <Border Grid.Column="1" Classes="card" Padding="18,14">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Spacing="16">
-
-                        <!-- ===== MOUVEMENT PATIENT - NOUVELLE SECTION ===== -->
-                        <StackPanel Spacing="12" IsVisible="{Binding ShowMouvementPatient}">
-                            <StackPanel Spacing="2">
-                                <TextBlock Classes="title-section"
-                                           Text="Mouvement &amp; Suivi des Patients"/>
-                                <TextBlock Classes="subtitle"
-                                           Text="Formulaire B - Patients existants"/>
-                            </StackPanel>
-                            
-                            <!-- Type de mouvement -->
-                            <Border Classes="card" Padding="14" Background="#F8FAFC">
-                                <StackPanel Spacing="8">
-                                    <TextBlock Classes="title-section" Text="Nouveau Mouvement"/>
-                                    
-                                    <StackPanel Spacing="4">
-                                        <TextBlock Classes="label" Text="Type de mouvement *"/>
-                                        <ComboBox ItemsSource="{Binding TypesMouvement}"
-                                                  SelectedItem="{Binding TypeMouvement, Mode=TwoWay}"
-                                                  HorizontalAlignment="Stretch"/>
-                                    </StackPanel>
-                                    
-                                    <StackPanel Spacing="4">
-                                        <TextBlock Classes="label" Text="Motif *"/>
-                                        <TextBox Text="{Binding Motif, Mode=TwoWay}"
-                                                 Watermark="Ex: Consultation générale, Hospitalisation pour..."
-                                                 AcceptsReturn="True" MaxLines="3"/>
-                                    </StackPanel>
-                                    
-                                    <!-- Durée jours (visible seulement pour Hospitalisation) -->
-                                    <StackPanel Spacing="4" IsVisible="{Binding ShowDureeJours}">
-                                        <TextBlock Classes="label" Text="Durée de séjour (jours) *">
-                                            <TextBlock.Foreground>
-                                                <SolidColorBrush Color="#DC2626"/>
-                                            </TextBlock.Foreground>
-                                        </TextBlock>
-                                        <NumericUpDown Value="{Binding DureeJours, Mode=TwoWay}"
-                                                       Minimum="1" FormatString="0"
-                                                       Watermark="Obligatoire pour hospitalisation"/>
-                                        <TextBlock Text="⚠ La durée est OBLIGATOIRE pour valider une sortie d'hospitalisation."
-                                                   FontSize="11" Foreground="#DC2626"/>
-                                    </StackPanel>
-                                    
-                                    <!-- Transfert morgue (visible seulement pour Décès) -->
-                                    <Border Background="#FEF2F2" CornerRadius="6" Padding="10,8"
-                                            IsVisible="{Binding ShowTransfertMorgue}">
-                                        <StackPanel Spacing="6">
-                                            <TextBlock Classes="label" Text="Transféré à la morgue ?"
-                                                       FontWeight="SemiBold" Foreground="#991B1B"/>
-                                            <StackPanel Orientation="Horizontal" Spacing="16">
-                                                <RadioButton Content="Oui" 
-                                                             IsChecked="{Binding TransfereAMorgue, Mode=TwoWay}"/>
-                                                <RadioButton Content="Non"
-                                                             IsChecked="{Binding TransfereAMorgue, Mode=TwoWay, Converter={StaticResource InverseBoolConverter}}"/>
-                                            </StackPanel>
-                                            <TextBlock Text="Si 'Oui', une entrée sera automatiquement créée dans SaisiesMorgue (CasFromHopital)."
-                                                       FontSize="11" Foreground="#991B1B"/>
-                                        </StackPanel>
-                                    </Border>
-                                </StackPanel>
-                            </Border>
-                            
-                            <!-- Boutons action -->
-                            <Grid ColumnDefinitions="*,Auto,Auto">
-                                <Border/>
-                                <Button Classes="secondary" Command="{Binding ReinitialiserCommand}"
-                                        Padding="16,0" Margin="0,0,8,0">
-                                    <TextBlock Text="Réinitialiser"/>
-                                </Button>
-                                <Button Grid.Column="2" Classes="primary" 
-                                        Command="{Binding EnregistrerMouvementCommand}"
-                                        IsEnabled="{Binding !IsSaving}"
-                                        Padding="20,0">
-                                    <TextBlock Text="Enregistrer le mouvement"/>
-                                </Button>
-                            </Grid>
-                            
-                            <!-- Status message -->
-                            <Border IsVisible="{Binding IsSuccess}"
-                                    Background="#D1FAE5" CornerRadius="6" Padding="10,8">
-                                <TextBlock Text="{Binding StatusMessage}" 
-                                           Foreground="#065F46"/>
-                            </Border>
-                            <Border IsVisible="{Binding IsSuccess, Converter={StaticResource InverseBoolConverter}}"
-                                    Background="#FEE2E2" CornerRadius="6" Padding="10,8">
-                                <TextBlock Text="{Binding StatusMessage}" 
-                                           Foreground="#991B1B"/>
-                            </Border>
-                            
-                            <!-- Historique Patient -->
-                            <Border Classes="card-small" Margin="0,10,0,0" Padding="12"
-                                    IsVisible="{Binding HistoriquePatient.Count, Converter={StaticResource IntToBoolConverter}}">
-                                <StackPanel Spacing="6">
-                                    <TextBlock Classes="title-section" Text="Historique des mouvements"/>
-                                    <ListBox ItemsSource="{Binding HistoriquePatient}" MaxHeight="200">
-                                        <ListBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid ColumnDefinitions="120,*,80,80">
-                                                    <TextBlock Grid.Column="0" Text="{Binding DateMouvement, StringFormat='{}{0:dd/MM/yyyy}'}"/>
-                                                    <TextBlock Grid.Column="1" Text="{Binding TypeMouvement}"/>
-                                                    <TextBlock Grid.Column="2" Text="{Binding Motif}"/>
-                                                    <TextBlock Grid.Column="3" Text="{Binding DureeJours, StringFormat='{}{0}j'}"
-                                                               IsVisible="{Binding DureeJours, Converter={StaticResource NullToBoolConverter}}"/>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ListBox.ItemTemplate>
-                                    </ListBox>
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
 
                         <!-- ===== CONSULTATIONS ===== -->
                         <StackPanel Spacing="12" IsVisible="{Binding ShowConsultation}">

@@ -47,3 +47,43 @@ public class BoolToStringConverter : IValueConverter
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         => throw new NotImplementedException();
 }
+
+/// <summary>
+/// Inverse un booléen pour le binding RadioButton (True ↔ False)
+/// </summary>
+public class InverseBoolConverter : IValueConverter
+{
+    public static readonly InverseBoolConverter Instance = new();
+
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is bool b)
+            return !b;
+        return false;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is bool b)
+            return !b;
+        return false;
+    }
+}
+
+/// <summary>
+/// Convertit un entier > 0 en booléen (pour visibilité ListBox avec Count)
+/// </summary>
+public class IntToBoolConverter : IValueConverter
+{
+    public static readonly IntToBoolConverter Instance = new();
+
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is int i)
+            return i > 0;
+        return false;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
