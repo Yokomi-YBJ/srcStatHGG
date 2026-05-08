@@ -34,10 +34,11 @@
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                     <StackPanel Spacing="2" Margin="0,12,0,12">
 
-                        <!-- Dashboard -->
+                        <!-- Dashboard - visible uniquement par SuperAdmin et Consulteur -->
                         <Button Classes="nav-item" Classes.active="{Binding IsDashboardActive}"
                                 Command="{Binding NavigateCommand}"
-                                CommandParameter="Dashboard">
+                                CommandParameter="Dashboard"
+                                IsVisible="{Binding CanViewDashboard}">
                             <StackPanel Orientation="Horizontal" Spacing="12">
                                 <Path Data="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"
                                       Fill="White" Width="18" Height="18" Stretch="Uniform"
