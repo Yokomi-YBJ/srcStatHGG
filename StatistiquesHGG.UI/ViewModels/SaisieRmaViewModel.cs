@@ -28,12 +28,10 @@ public class SaisieRmaViewModel : BaseViewModel, ILoadable
         MapeDateDebut = DateTimeOffset.Now.AddDays(-7);
         MapeDateFin   = DateTimeOffset.Now;
 
-        EnregistrerCommand          = new RelayCommand(async () => await EnregistrerAsync());
-        ReinitialiserCommand        = new RelayCommandSync(Reinitialiser);
-        NavigateOngletCommand       = new RelayCommandSync<object?>(
+        EnregistrerCommand    = new RelayCommand(async () => await EnregistrerAsync());
+        ReinitialiserCommand  = new RelayCommandSync(Reinitialiser);
+        NavigateOngletCommand = new RelayCommandSync<object?>(
             p => { if (int.TryParse(p?.ToString(), out int idx)) OngletActif = idx; });
-        RechercherPatientCommand    = new RelayCommand(async () => await RechercherPatientAsync());
-        EnregistrerMouvementCommand = new RelayCommand(async () => await EnregistrerMouvementAsync());
 
         InitMape();
     }
@@ -55,11 +53,7 @@ public class SaisieRmaViewModel : BaseViewModel, ILoadable
     public bool ShowVaccination     => OngletActif == 6 && MenuVaccinationVisible;
     public bool ShowBanqueSang      => OngletActif == 7 && MenuBanqueSangVisible;
     public bool ShowMorgue          => OngletActif == 8 && MenuMorgueVisible;
-    public bool ShowMape            => OngletActif == 9 && MenuMapeVisible;
-    public bool ShowMouvementPatient => OngletActif == 10;
-    
-    // Afficher la section recherche patient seulement quand on est sur l'onglet Mouvement Patient
-    public bool ShowRecherchePatient => OngletActif == 10;
+    public bool ShowMape            => OngletActif == 9;
 
     // Menus visibles selon le service de l'agent
     // SuperAdmin voit tout; les agents voient leur section uniquement
@@ -72,7 +66,6 @@ public class SaisieRmaViewModel : BaseViewModel, ILoadable
     public bool MenuVaccinationVisible     { get; private set; } = true;
     public bool MenuBanqueSangVisible      { get; private set; } = true;
     public bool MenuMorgueVisible          { get; private set; } = true;
-    public bool MenuMapeVisible            { get; private set; } = true;
 
     // ===== Service =====
     public Service? ServiceActuel   { get; private set; }
@@ -104,81 +97,6 @@ public class SaisieRmaViewModel : BaseViewModel, ILoadable
 
     // ===== Dernières saisies =====
     public ObservableCollection<SaisieInfo> DernieresSaisies { get; } = new();
-
-    // =============================================
-    // MOUVEMENT PATIENT - Propriétés intégrées
-    // =============================================
-    private string _rechercheMatricule = string.Empty;
-    private Patient? _patientSelectionne;
-    private string _typeMouvement = "Consultation";
-    private string _motif = string.Empty;
-    private int? _dureeJours;
-    private bool _transfereAMorgue;
-    
-    public string RechercheMatricule
-    {
-        get => _rechercheMatricule;
-        set { SetProperty(ref _rechercheMatricule, value); }
-    }
-    
-    public ObservableCollection<Patient> PatientsSuggeres { get; } = new();
-    
-    public Patient? PatientSelectionne
-    {
-        get => _patientSelectionne;
-        set 
-        { 
-            SetProperty(ref _patientSelectionne, value);
-            if (value != null)
-            {
-                RechercheMatricule = value.Matricule;
-                OnPropertyChanged(nameof(PatientAffiche));
-            }
-        }
-    }
-    
-    public string PatientAffiche => PatientSelectionne != null 
-        ? $"{PatientSelectionne.Nom} {PatientSelectionne.Prenoms} ({PatientSelectionne.Matricule}) - {PatientSelectionne.Sexe} - Âge: {CalculerAge(PatientSelectionne.DateNaissance)} ans"
-        : "Aucun patient sélectionné";
-    
-    public string[] TypesMouvement { get; } = { "Consultation", "Hospitalisation", "Décès", "Sortie", "Transfert" };
-    
-    public string TypeMouvement
-    {
-        get => _typeMouvement;
-        set 
-        { 
-            SetProperty(ref _typeMouvement, value);
-            OnPropertyChanged(nameof(ShowDureeJours));
-            OnPropertyChanged(nameof(ShowTransfertMorgue));
-        }
-    }
-    
-    public string Motif
-    {
-        get => _motif;
-        set { SetProperty(ref _motif, value); }
-    }
-    
-    public int? DureeJours
-    {
-        get => _dureeJours;
-        set { SetProperty(ref _dureeJours, value); }
-    }
-    
-    public bool TransfereAMorgue
-    {
-        get => _transfereAMorgue;
-        set { SetProperty(ref _transfereAMorgue, value); }
-    }
-    
-    public bool ShowDureeJours => TypeMouvement == "Hospitalisation";
-    public bool ShowTransfertMorgue => TypeMouvement == "Décès";
-    
-    public ObservableCollection<PatientMouvement> HistoriquePatient { get; } = new();
-    
-    public ICommand RechercherPatientCommand { get; }
-    public ICommand EnregistrerMouvementCommand { get; }
 
     // =============================================
     // CONSULTATION
@@ -723,14 +641,6 @@ public class SaisieRmaViewModel : BaseViewModel, ILoadable
     {
         var svc = GetServiceEffectif();
         if (svc == null) { SetStatus("Sélectionnez un service.", false); return; }
-        
-        // v5: Validation obligatoire - Durée d'hospitalisation requise
-        if (HospJours < 1)
-        {
-            SetStatus("La durée d'hospitalisation (en jours) est OBLIGATOIRE pour valider une sortie.", false);
-            return;
-        }
-        
         string activite = (HospActiviteIndex >= 0 && HospActiviteIndex < ActivitesHosp.Length)
             ? ActivitesHosp[HospActiviteIndex] : string.Empty;
         bool valide = EstValideDirectement(user);
@@ -745,7 +655,7 @@ public class SaisieRmaViewModel : BaseViewModel, ILoadable
         };
         _context.SaisiesHospitalisation.Add(s);
         await _context.SaveChangesAsync();
-        SetStatus($"Hospitalisations enregistrées — Total : {s.Total} — Jours : {HospJours}", true);
+        SetStatus($"Hospitalisations enregistrées — Total : {s.Total}", true);
     }
 
     private async Task EnregistrerChirurgieAsync(Utilisateur user)
@@ -984,139 +894,6 @@ public class SaisieRmaViewModel : BaseViewModel, ILoadable
         OnPropertyChanged(nameof(ShowDeces));        OnPropertyChanged(nameof(ShowLabo));
         OnPropertyChanged(nameof(ShowVaccination));  OnPropertyChanged(nameof(ShowBanqueSang));
         OnPropertyChanged(nameof(ShowMorgue));       OnPropertyChanged(nameof(ShowMape));
-        OnPropertyChanged(nameof(ShowMouvementPatient)); OnPropertyChanged(nameof(ShowRecherchePatient));
-    }
-
-    // ===== Méthodes Mouvement Patient =====
-    private async Task RechercherPatientAsync()
-    {
-        if (string.IsNullOrWhiteSpace(RechercheMatricule))
-        {
-            SetStatus("Veuillez saisir un matricule.", false);
-            return;
-        }
-        
-        try
-        {
-            var patientService = new PatientRmaService(_context);
-            var patients = await patientService.RechercherPatientsParMatriculeAsync(RechercheMatricule);
-            
-            PatientsSuggeres.Clear();
-            foreach (var p in patients)
-                PatientsSuggeres.Add(p);
-            
-            if (patients.Count == 1)
-            {
-                PatientSelectionne = patients[0];
-                await ChargerHistoriqueAsync(PatientSelectionne.Id);
-                SetStatus($"Patient trouvé : {PatientSelectionne.Nom} {PatientSelectionne.Prenoms}", true);
-            }
-            else if (patients.Count > 1)
-            {
-                SetStatus($"{patients.Count} patients trouvés. Sélectionnez dans la liste.", true);
-            }
-            else
-            {
-                SetStatus("Aucun patient trouvé avec ce matricule.", false);
-                PatientSelectionne = null;
-            }
-        }
-        catch (Exception ex)
-        {
-            SetStatus($"Erreur recherche : {ex.Message}", false);
-        }
-    }
-    
-    private async Task ChargerHistoriqueAsync(int patientId)
-    {
-        var patientService = new PatientRmaService(_context);
-        var patient = await patientService.ObtenirPatientAvecHistoriqueAsync(patientId);
-        if (patient == null) return;
-        
-        HistoriquePatient.Clear();
-        foreach (var m in patient.Mouvements.OrderByDescending(m => m.DateMouvement))
-            HistoriquePatient.Add(m);
-    }
-    
-    private async Task EnregistrerMouvementAsync()
-    {
-        var user = AuthenticationService.CurrentUser;
-        if (user == null) { SetStatus("Utilisateur non connecté.", false); return; }
-        
-        if (PatientSelectionne == null)
-        {
-            SetStatus("Veuillez sélectionner un patient.", false);
-            return;
-        }
-        
-        if (TypeMouvement == "Hospitalisation" && (!DureeJours.HasValue || DureeJours.Value < 1))
-        {
-            SetStatus("La durée d'hospitalisation est OBLIGATOIRE (minimum 1 jour).", false);
-            return;
-        }
-        
-        if (TypeMouvement == "Décès" && string.IsNullOrWhiteSpace(Motif))
-        {
-            SetStatus("Le motif du décès est obligatoire.", false);
-            return;
-        }
-        
-        IsSaving = true;
-        try
-        {
-            var patientService = new PatientRmaService(_context);
-            var serviceId = AuthenticationService.CurrentUser?.ServiceId;
-            
-            var mouvement = await patientService.EnregistrerMouvementAsync(
-                patientId: PatientSelectionne.Id,
-                typeMouvement: TypeMouvement,
-                serviceId: serviceId,
-                motif: Motif,
-                dureeJours: DureeJours,
-                transfereAMorgue: TransfereAMorgue
-            );
-            
-            if (TypeMouvement == "Décès" && TransfereAMorgue)
-            {
-                SetStatus($"Mouvement enregistré + transfert morgue activé", true);
-            }
-            else
-            {
-                SetStatus($"Mouvement '{TypeMouvement}' enregistré pour {PatientSelectionne.Nom}", true);
-            }
-            
-            await ChargerHistoriqueAsync(PatientSelectionne.Id);
-            ReinitialiserMouvement();
-        }
-        catch (Exception ex)
-        {
-            SetStatus($"Erreur enregistrement : {ex.Message}", false);
-        }
-        finally
-        {
-            IsSaving = false;
-        }
-    }
-    
-    private void ReinitialiserMouvement()
-    {
-        RechercheMatricule = string.Empty;
-        PatientSelectionne = null;
-        Motif = string.Empty;
-        DureeJours = null;
-        TransfereAMorgue = false;
-        TypeMouvement = "Consultation";
-        PatientsSuggeres.Clear();
-        HistoriquePatient.Clear();
-        SetStatus(string.Empty, false);
-    }
-    
-    private int CalculerAge(DateTime dateNaissance)
-    {
-        var today = DateTime.Today;
-        var age = today.Year - dateNaissance.Year;
-        if (dateNaissance.Date > today.AddYears(-age)) age--;
-        return age;
     }
 }
 
