@@ -57,7 +57,6 @@ public partial class App : Application
         services.AddTransient<MainViewModel>();
         services.AddTransient<DashboardViewModel>();
         services.AddTransient<SaisieRmaViewModel>();        // Nouveau
-        services.AddTransient<MouvementPatientViewModel>(); // v5: Formulaire B - Mouvement & Suivi
         services.AddTransient<ValidationViewModel>();
         services.AddTransient<RapportViewModel>();
         services.AddTransient<UtilisateursViewModel>();
